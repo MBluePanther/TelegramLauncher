@@ -1,0 +1,76 @@
+﻿<UserControl x:Class="TelegramLauncher.Views.MarkupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             MinHeight="300" MinWidth="400">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Панель настроек -->
+        <StackPanel Orientation="Horizontal" Margin="0,0,0,8" VerticalAlignment="Top" >
+            <!-- Режим -->
+            <StackPanel Margin="0,0,12,0">
+                <TextBlock Text="Режим" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                <ComboBox x:Name="ModeBox" Width="200" SelectionChanged="ModeBox_SelectionChanged">
+                    <ComboBoxItem Content="Автоматическая" Tag="Auto" IsSelected="True"/>
+                    <ComboBoxItem Content="По сетке" Tag="Grid"/>
+                    <ComboBoxItem Content="Хаотичная" Tag="Chaotic"/>
+                    <ComboBoxItem Content="Пользовательская (H/V)" Tag="Custom"/>
+                </ComboBox>
+            </StackPanel>
+
+            <!-- Монитор -->
+            <StackPanel Margin="0,0,12,0">
+                <TextBlock Text="Монитор" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                <ComboBox x:Name="MonitorBox" Width="220"/>
+            </StackPanel>
+
+            <!-- Пользовательская сетка -->
+            <StackPanel x:Name="CustomGridPanel" Orientation="Horizontal" Visibility="Collapsed" VerticalAlignment="Bottom">
+                <StackPanel Margin="0,0,8,0">
+                    <TextBlock Text="Колонки" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox x:Name="CustomColsBox" Width="70" Text="2"/>
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock Text="Строки" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                    <TextBox x:Name="CustomRowsBox" Width="70" Text="1"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Дизайнер-сетка 10x5 -->
+        <Border Grid.Row="1" Background="#111A23" CornerRadius="8" Padding="8">
+            <Grid>
+                <UniformGrid x:Name="DesignerGrid" Rows="5" Columns="10"/>
+            </Grid>
+        </Border>
+
+        <!-- Кнопки -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,8,0,0" HorizontalAlignment="Right">
+            <Button Click="ClearSelection_Click" Padding="10,6" Margin="0,0,8,0">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="Eraser" Width="18" Height="18"/>
+                    <TextBlock Text="Очистить выделение" Margin="6,0,0,0"/>
+                </StackPanel>
+            </Button>
+
+            <Button Click="SaveDefault_Click" Padding="10,6" Margin="0,0,8,0">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="ContentSave" Width="18" Height="18"/>
+                    <TextBlock Text="Сохранить по умолчанию" Margin="6,0,0,0"/>
+                </StackPanel>
+            </Button>
+
+            <Button Click="ApplyToRunning_Click" Padding="10,6">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="ArrangeSendToBack" Width="18" Height="18"/>
+                    <TextBlock Text="Применить к запущенным" Margin="6,0,0,0"/>
+                </StackPanel>
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>

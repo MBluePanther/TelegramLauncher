@@ -1,0 +1,330 @@
+﻿<mah:MetroWindow
+    x:Class="TelegramLauncher.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+    xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+    xmlns:models="clr-namespace:TelegramLauncher.Models"
+    xmlns:conv="clr-namespace:TelegramLauncher.Converters"
+    Title="TELEGRAM LAUNCHER"
+    Height="720" Width="1100"
+    WindowStartupLocation="CenterScreen"
+    GlowBrush="{DynamicResource AccentColorBrush}">
+
+    <!-- РЕСУРСЫ -->
+    <mah:MetroWindow.Resources>
+        <conv:StatusToBrushConverter x:Key="StatusToBrush" />
+        <conv:StatusToEmojiConverter x:Key="StatusToEmoji" />
+    </mah:MetroWindow.Resources>
+
+    <!-- ЛЕВЫЙ БУРГЕР-МЕНЮ -->
+    <mah:MetroWindow.Flyouts>
+        <mah:FlyoutsControl>
+            <mah:Flyout x:Name="MainMenuFlyout"
+                        Position="Left"
+                        Header="Меню"
+                        IsOpen="False"
+                        Theme="Dark">
+                <StackPanel Margin="8">
+                    <Button Padding="10,6" Margin="0,0,0,6" Click="MenuLauncher_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="Home" Width="18" Height="18"/>
+                            <TextBlock Text="Лаунчер" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Padding="10,6" Margin="0,0,0,6" Click="MenuMarkup_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="GridLarge" Width="18" Height="18"/>
+                            <TextBlock Text="Разметка" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Padding="10,6" Margin="0,0,0,6" Click="MenuPatcher_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="ToolboxOutline" Width="18" Height="18"/>
+                            <TextBlock Text="Патчер" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Padding="10,6" Margin="0,0,0,6" Click="MenuGlass_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="CubeScan" Width="18" Height="18"/>
+                            <TextBlock Text="Стекловата" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Padding="10,6" Click="MenuTools_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="WrenchOutline" Width="18" Height="18"/>
+                            <TextBlock Text="Инструменты" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </mah:Flyout>
+        </mah:FlyoutsControl>
+    </mah:MetroWindow.Flyouts>
+
+    <!-- КОНТЕНТ -->
+    <Grid AllowDrop="True"
+          PreviewDragOver="Root_PreviewDragOver"
+          Drop="Root_Drop">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- ВЕРХНЯЯ ПОЛОСА -->
+        <DockPanel Grid.Row="0" Margin="8,8,8,4">
+            <Button DockPanel.Dock="Left" Padding="10,6" Click="ToggleMenu_Click">
+                <StackPanel Orientation="Horizontal">
+                    <iconPacks:PackIconMaterial Kind="Menu" Width="18" Height="18"/>
+                    <TextBlock Text="Меню" Margin="6,0,0,0"/>
+                </StackPanel>
+            </Button>
+            <TextBlock x:Name="HeaderText"
+                       Text="Мои Telegram-клиенты"
+                       VerticalAlignment="Center"
+                       FontSize="18" FontWeight="SemiBold"
+                       Margin="12,0,0,0"/>
+        </DockPanel>
+
+        <!-- СЕКЦИИ -->
+        <Grid Grid.Row="1">
+
+            <!-- ===== ЛАУНЧЕР ===== -->
+            <Grid x:Name="LauncherPanel" Visibility="Visible">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <!-- кнопки -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- прогресс -->
+                    <RowDefinition Height="*"/>
+                    <!-- список -->
+                </Grid.RowDefinitions>
+
+                <!-- Верхние кнопки -->
+                <StackPanel x:Name="LauncherTopButtons" Orientation="Horizontal" Margin="8" Grid.Row="0">
+                    <Button x:Name="AddButton" Padding="10,6" Click="AddButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="Plus" Width="18" Height="18"/>
+                            <TextBlock Text="Добавить" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="RunAllButton" Margin="8,0,0,0" Padding="10,6" Click="RunAllButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="PlayCircleOutline" Width="18" Height="18"/>
+                            <TextBlock Text="Запустить все" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+
+                    <Button x:Name="SaveButton" Margin="8,0,0,0" Padding="10,6" Click="SaveButton_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="ContentSave" Width="18" Height="18"/>
+                            <TextBlock Text="Сохранить" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- Новое: удалить выбранные -->
+                    <Button x:Name="RemoveSelectedButton" Margin="8,0,0,0" Padding="10,6" Click="RemoveSelected_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="DeleteSweepOutline" Width="18" Height="18"/>
+                            <TextBlock Text="Удалить выбранные" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- Прогресс поиска -->
+                <StackPanel x:Name="ScanPanel"
+                            Grid.Row="1"
+                            Orientation="Horizontal"
+                            Margin="8,0,8,8"
+                            Visibility="Collapsed"
+                            VerticalAlignment="Center">
+                    <ProgressBar x:Name="ScanProgress"
+                                 Height="6"
+                                 MinWidth="220"
+                                 Width="220"
+                                 IsIndeterminate="True"/>
+                    <TextBlock x:Name="ScanStatus"
+                               Margin="12,0,0,0"
+                               VerticalAlignment="Center"
+                               Opacity="0.9"/>
+                    <Button x:Name="CancelScanButton"
+                            Margin="12,0,0,0"
+                            Padding="10,4"
+                            Click="CancelScan_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="Close" Width="16" Height="16"/>
+                            <TextBlock Text="Отмена" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <!-- Список клиентов -->
+                <ScrollViewer x:Name="MainScroll"
+                              Grid.Row="2"
+                              Margin="8"
+                              VerticalScrollBarVisibility="Auto"
+                              PreviewMouseWheel="MainScroll_PreviewMouseWheel">
+                    <ListBox x:Name="ClientsList"
+                             Background="Transparent"
+                             BorderThickness="0"
+                             ItemContainerStyle="{x:Null}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type models:ClientConfig}">
+                                <Border CornerRadius="10" Padding="12" Margin="0,0,0,10"
+                                        Background="{Binding Status, Converter={StaticResource StatusToBrush}}">
+                                    <!-- Лёгкая обёртка: чекбокс + твоя карточка -->
+                                    <DockPanel LastChildFill="True">
+                                        <CheckBox DockPanel.Dock="Left"
+                                                  Margin="0,0,8,0"
+                                                  VerticalAlignment="Center"
+                                                  IsChecked="{Binding IsSelected}"
+                                                  ToolTip="Выбрать элемент"/>
+                                        <!-- Твой контент карточки -->
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                            </Grid.ColumnDefinitions>
+
+                                            <iconPacks:PackIconMaterial Grid.Column="0"
+                                                                        Kind="SendCircleOutline"
+                                                                        Width="28" Height="28"
+                                                                        Margin="6,0,8,0"/>
+
+                                            <StackPanel Grid.Column="1" Margin="0,2,8,2">
+                                                <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold"/>
+                                                <TextBlock Text="{Binding ExePath}" FontSize="12" Opacity="0.8"/>
+                                            </StackPanel>
+
+                                            <Button Grid.Column="2"
+                                                    Padding="10,6"
+                                                    Click="StatusButton_Click"
+                                                    Background="{Binding Status, Converter={StaticResource StatusToBrush}}">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Статус"/>
+                                                    <TextBlock Text="{Binding Status, Converter={StaticResource StatusToEmoji}}"
+                                                               FontSize="16" Margin="6,0,0,0"/>
+                                                </StackPanel>
+                                                <Button.ContextMenu>
+                                                    <ContextMenu>
+                                                        <MenuItem Header="Актив"     Tag="Active" Click="StatusMenu_Click"/>
+                                                        <MenuItem Header="Заморожен" Tag="Frozen" Click="StatusMenu_Click"/>
+                                                        <MenuItem Header="Слёт"      Tag="Crash"  Click="StatusMenu_Click"/>
+                                                    </ContextMenu>
+                                                </Button.ContextMenu>
+                                            </Button>
+
+                                            <Button Grid.Column="3" Padding="10,6" Margin="6,0,0,0"
+                                                    Click="RunClient_Click">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <iconPacks:PackIconMaterial Kind="Play" Width="18" Height="18"/>
+                                                    <TextBlock Text="Запуск" Margin="6,0,0,0"/>
+                                                </StackPanel>
+                                            </Button>
+
+                                            <Button Grid.Column="4" Padding="10,6" Margin="6,0,0,0"
+                                                    Click="PickExe_Click">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <iconPacks:PackIconMaterial Kind="Folder" Width="18" Height="18"/>
+                                                    <TextBlock Text="Файл" Margin="6,0,0,0"/>
+                                                </StackPanel>
+                                            </Button>
+
+                                            <Button Grid.Column="5" Padding="10,6" Margin="6,0,0,0"
+                                                    Click="RemoveClient_Click">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <iconPacks:PackIconMaterial Kind="DeleteOutline" Width="18" Height="18"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </Grid>
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </ScrollViewer>
+            </Grid>
+
+            <!-- ===== РАЗМЕТКА ===== -->
+            <Grid x:Name="MarkupPanel" Visibility="Collapsed">
+                <Border CornerRadius="10" Padding="12" Background="#17212B" Margin="8">
+                    <ContentControl x:Name="MarkupHost"/>
+                </Border>
+            </Grid>
+
+            <!-- ===== ПАТЧЕР (заглушка) ===== -->
+            <Grid x:Name="PatcherPanel" Visibility="Collapsed">
+                <Border CornerRadius="10" Padding="12" Background="#17212B" Margin="8">
+                    <TextBlock Text="Патчер — скоро тут появятся инструменты."/>
+                </Border>
+            </Grid>
+
+            <!-- ===== СТЕКЛОВАТА (заглушка) ===== -->
+            <Grid x:Name="GlassPanel" Visibility="Collapsed">
+                <Border CornerRadius="10" Padding="12" Background="#17212B" Margin="8">
+                    <TextBlock Text="Стекловата — отдельные утилиты."/>
+                </Border>
+            </Grid>
+
+            <!-- ===== ИНСТРУМЕНТЫ ===== -->
+            <Grid x:Name="ToolsPanel" Visibility="Collapsed">
+                <ScrollViewer VerticalScrollBarVisibility="Auto">
+                    <StackPanel Margin="8">
+                        <!-- Очистка hiberfil.sys -->
+                        <Border CornerRadius="10" Padding="12" Background="#17212B" Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Очистка hiberfil.sys" FontSize="16" FontWeight="SemiBold"/>
+                                <TextBlock Margin="0,6,0,10" Opacity="0.85"
+                                           Text="Отключает гибернацию и удаляет системный файл hiberfil.sys, освобождая десятки гигабайт, если вы не используете сон/гибернацию."/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Padding="10,6" Click="CleanHiberfil_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <iconPacks:PackIconMaterial Kind="Eraser" Width="18" Height="18"/>
+                                            <TextBlock Text="Очистить" Margin="6,0,0,0"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Padding="10,6" Margin="8,0,0,0" Click="RestoreHibernate_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <iconPacks:PackIconMaterial Kind="Power" Width="18" Height="18"/>
+                                            <TextBlock Text="Включить обратно" Margin="6,0,0,0"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                                <TextBlock x:Name="HiberfilStatusText" Margin="0,8,0,0" Opacity="0.9"/>
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Смена «железа» -->
+                        <Border CornerRadius="10" Padding="12" Background="#17212B">
+                            <StackPanel>
+                                <TextBlock Text="Смена «железа»" FontSize="16" FontWeight="SemiBold"/>
+                                <TextBlock Margin="0,6,0,10" Opacity="0.85"
+                                           Text="Выбирает случайный профиль из device_profiles.txt и применяет значения в реестр (BIOS/Board/System). Ведётся лог applied_profiles.log рядом с .exe."/>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Padding="10,6" Click="ApplyRandomHardwareProfile_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <iconPacks:PackIconMaterial Kind="ShuffleVariant" Width="18" Height="18"/>
+                                            <TextBlock Text="Применить случайный профиль" Margin="6,0,0,0"/>
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Padding="10,6" Margin="8,0,0,0" Click="OpenProfilesFolder_Click">
+                                        <StackPanel Orientation="Horizontal">
+                                            <iconPacks:PackIconMaterial Kind="FolderSearchOutline" Width="18" Height="18"/>
+                                            <TextBlock Text="Открыть папку профилей" Margin="6,0,0,0"/>
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
+                                <TextBlock x:Name="HardwareChangeStatusText" Margin="0,8,0,0" Opacity="0.9"/>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+
+        </Grid>
+    </Grid>
+</mah:MetroWindow>
