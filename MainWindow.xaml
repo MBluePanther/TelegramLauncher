@@ -5,7 +5,7 @@
     xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:models="clr-namespace:TelegramLauncher.Models"
-    xmlns:conv="clr-namespace:TelegramLauncher"
+    xmlns:conv="clr-namespace:TelegramLauncher.Converters"
     xmlns:views="clr-namespace:TelegramLauncher.Views"
     xmlns:notif="clr-namespace:TelegramLauncher.Notifications"
     Title="TELEGRAM LAUNCHER"
@@ -32,6 +32,12 @@
                         <StackPanel Orientation="Horizontal">
                             <iconPacks:PackIconMaterial Kind="Home" Width="18" Height="18"/>
                             <TextBlock Text="Лаунчер" Margin="6,0,0,0"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Padding="10,6" Margin="0,0,0,6" Click="MenuArranger_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="ViewGridPlus" Width="18" Height="18"/>
+                            <TextBlock Text="Запускатор" Margin="6,0,0,0"/>
                         </StackPanel>
                     </Button>
                     <Button Padding="10,6" Margin="0,0,0,6" Click="MenuMarkup_Click">
@@ -115,13 +121,6 @@
                         <StackPanel Orientation="Horizontal">
                             <iconPacks:PackIconMaterial Kind="Plus" Width="18" Height="18"/>
                             <TextBlock Text="Добавить" Margin="6,0,0,0"/>
-                        </StackPanel>
-                    </Button>
-
-                    <Button x:Name="RunAllButton" Margin="8,0,0,0" Padding="10,6" Click="RunAllButton_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <iconPacks:PackIconMaterial Kind="PlayCircleOutline" Width="18" Height="18"/>
-                            <TextBlock Text="Запустить все" Margin="6,0,0,0"/>
                         </StackPanel>
                     </Button>
 
