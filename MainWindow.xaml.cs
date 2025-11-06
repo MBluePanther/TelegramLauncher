@@ -20,7 +20,6 @@ using TelegramLauncher.Views;
 using TelegramLauncher.Layouting;
 using WinForms = System.Windows.Forms;
 
-using TelegramLauncher.Notifications;
 namespace TelegramLauncher
 {
     public partial class MainWindow : MetroWindow
@@ -63,6 +62,14 @@ namespace TelegramLauncher
         private void MenuPatcher_Click(object sender, RoutedEventArgs e) => SetSection(Section.Patcher);
         private void MenuGlass_Click(object sender, RoutedEventArgs e) => SetSection(Section.Glass);
         private void MenuTools_Click(object sender, RoutedEventArgs e) => SetSection(Section.Tools);
+
+        private void MenuArranger_Click(object sender, RoutedEventArgs e)
+        {
+            MainMenuFlyout.IsOpen = false;
+            var clients = this.Clients?.ToList() ?? new List<ClientConfig>();
+            var w = new TelegramLauncher.Views.LauncherArrangerWindow(clients) { Owner = this };
+            w.Show();
+        }
 
         private void SetSection(Section s)
         {
@@ -383,14 +390,7 @@ namespace TelegramLauncher
                         _ => newStatus.ToString()
                     };
 
-                    var kind = newStatus switch
-                    {
-                        ClientStatus.Active => ToastKind.Success,
-                        ClientStatus.Frozen => ToastKind.Warning,
-                        ClientStatus.Crash => ToastKind.Error,
-                        _ => ToastKind.Info
-                    };
-                    ToastManager.Show($"«{cfg.Name}»: {human}", kind);
+                    await this.ShowMessageAsync("Статус обновлён", $"«{cfg.Name}»: {human}", MessageDialogStyle.Affirmative, _dlg);
                 }
             }
         }
@@ -827,7 +827,7 @@ namespace TelegramLauncher
                         try
                         {
                             p.Kill(entireProcessTree: true);
-                            p.WaitForExit(1500);
+                            p.WaitForExit(200);
                             killed++;
                         }
                         catch
