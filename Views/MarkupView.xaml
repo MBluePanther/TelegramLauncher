@@ -43,7 +43,7 @@
         </StackPanel>
 
         <!-- Дизайнер-сетка 10x5 -->
-        <Border Grid.Row="1" Background="#111A23" CornerRadius="8" Padding="8">
+        <Border Grid.Row="1" Background="#B2232323" CornerRadius="8" Padding="8">
             <Grid>
                 <UniformGrid x:Name="DesignerGrid" Rows="5" Columns="10"/>
             </Grid>

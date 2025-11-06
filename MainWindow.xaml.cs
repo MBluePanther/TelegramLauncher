@@ -20,6 +20,7 @@ using TelegramLauncher.Views;
 using TelegramLauncher.Layouting;
 using WinForms = System.Windows.Forms;
 
+using TelegramLauncher.Notifications;
 namespace TelegramLauncher
 {
     public partial class MainWindow : MetroWindow
@@ -382,7 +383,14 @@ namespace TelegramLauncher
                         _ => newStatus.ToString()
                     };
 
-                    await this.ShowMessageAsync("Статус обновлён", $"«{cfg.Name}»: {human}", MessageDialogStyle.Affirmative, _dlg);
+                    var kind = newStatus switch
+                    {
+                        ClientStatus.Active => ToastKind.Success,
+                        ClientStatus.Frozen => ToastKind.Warning,
+                        ClientStatus.Crash => ToastKind.Error,
+                        _ => ToastKind.Info
+                    };
+                    ToastManager.Show($"«{cfg.Name}»: {human}", kind);
                 }
             }
         }
@@ -794,7 +802,7 @@ namespace TelegramLauncher
 
             private static readonly string[] KillNameContains =
             {
-        "telegram", "tdesktop", "kotatogram", "unigram", "nekogram", "kibibitogram"
+        "telegram", "tdesktop"
     };
 
             // Главная функция: пройтись по процессам и прибить все подходящие
@@ -819,7 +827,7 @@ namespace TelegramLauncher
                         try
                         {
                             p.Kill(entireProcessTree: true);
-                            p.WaitForExit(3000);
+                            p.WaitForExit(1500);
                             killed++;
                         }
                         catch
@@ -893,8 +901,6 @@ namespace TelegramLauncher
         // Обработчик кнопки (по требованию — без подтверждения, «жёсткий» килл)
         private async void KillTelegram_Click(object sender, RoutedEventArgs e)
         {
-            // Если захочешь вернуть подтверждение — раскомментируй блок ниже:
-            /*
             var confirm = await this.ShowMessageAsync(
                 "Киллер Telegram",
                 "Завершить ВСЕ процессы Telegram и форков? Это принудительное действие.",
@@ -902,7 +908,7 @@ namespace TelegramLauncher
 
             if (confirm != MessageDialogResult.Affirmative)
                 return;
-            */
+
 
             var (killed, errors, total) = await Task.Run(TelegramProcessKiller.KillAll);
 
