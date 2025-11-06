@@ -6,6 +6,7 @@
     xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
     xmlns:models="clr-namespace:TelegramLauncher.Models"
     xmlns:conv="clr-namespace:TelegramLauncher.Converters"
+    xmlns:views="clr-namespace:TelegramLauncher.Views"
     Title="TELEGRAM LAUNCHER"
     Height="720" Width="1100"
     WindowStartupLocation="CenterScreen"
@@ -44,12 +45,16 @@
                             <TextBlock Text="Патчер" Margin="6,0,0,0"/>
                         </StackPanel>
                     </Button>
-                    <Button Padding="10,6" Margin="0,0,0,6" Click="MenuGlass_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <iconPacks:PackIconMaterial Kind="CubeScan" Width="18" Height="18"/>
-                            <TextBlock Text="Стекловата" Margin="6,0,0,0"/>
+                    <Button x:Name="MenuGlassButton"
+        Margin="0,0,0,6"
+        Click="MenuGlass_Click">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <!-- Иконка: оставь, если у тебя уже подключены IconPacks -->
+                            <iconPacks:PackIconMaterial Kind="GlassWine" Width="18" Height="18" />
+                            <TextBlock Text="Стекловата" Margin="10,0,0,0" />
                         </StackPanel>
                     </Button>
+
                     <Button Padding="10,6" Click="MenuTools_Click">
                         <StackPanel Orientation="Horizontal">
                             <iconPacks:PackIconMaterial Kind="WrenchOutline" Width="18" Height="18"/>
@@ -90,6 +95,10 @@
 
             <!-- ===== ЛАУНЧЕР ===== -->
             <Grid x:Name="LauncherPanel" Visibility="Visible">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="7*"/>
+                    <ColumnDefinition Width="268*"/>
+                </Grid.ColumnDefinitions>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <!-- кнопки -->
@@ -100,7 +109,7 @@
                 </Grid.RowDefinitions>
 
                 <!-- Верхние кнопки -->
-                <StackPanel x:Name="LauncherTopButtons" Orientation="Horizontal" Margin="8" Grid.Row="0">
+                <StackPanel x:Name="LauncherTopButtons" Orientation="Horizontal" Margin="8,8,8,8" Grid.Row="0" Grid.ColumnSpan="2">
                     <Button x:Name="AddButton" Padding="10,6" Click="AddButton_Click">
                         <StackPanel Orientation="Horizontal">
                             <iconPacks:PackIconMaterial Kind="Plus" Width="18" Height="18"/>
@@ -129,15 +138,25 @@
                             <TextBlock Text="Удалить выбранные" Margin="6,0,0,0"/>
                         </StackPanel>
                     </Button>
+                    <Button x:Name="KillAllTgButton"
+        Margin="8,0,0,0"
+        Padding="10,6"
+        Click="KillTelegram_Click"
+        ToolTip="Принудительно завершить все процессы Telegram и форков">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <!-- iconPacks уже используется в проекте -->
+                            <iconPacks:PackIconMaterial Kind="Skull" Width="18" Height="18"/>
+                            <TextBlock Text="  Убить все Telegram" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
 
                 <!-- Прогресс поиска -->
                 <StackPanel x:Name="ScanPanel"
-                            Grid.Row="1"
                             Orientation="Horizontal"
-                            Margin="8,0,8,8"
+                            Margin="8,44,8,0"
                             Visibility="Collapsed"
-                            VerticalAlignment="Center">
+                            VerticalAlignment="Top" Grid.ColumnSpan="2">
                     <ProgressBar x:Name="ScanProgress"
                                  Height="6"
                                  MinWidth="220"
@@ -161,9 +180,9 @@
                 <!-- Список клиентов -->
                 <ScrollViewer x:Name="MainScroll"
                               Grid.Row="2"
-                              Margin="8"
+                              Margin="8,8,8,8"
                               VerticalScrollBarVisibility="Auto"
-                              PreviewMouseWheel="MainScroll_PreviewMouseWheel">
+                              PreviewMouseWheel="MainScroll_PreviewMouseWheel" Grid.ColumnSpan="2">
                     <ListBox x:Name="ClientsList"
                              Background="Transparent"
                              BorderThickness="0"
@@ -178,7 +197,8 @@
                                                   Margin="0,0,8,0"
                                                   VerticalAlignment="Center"
                                                   IsChecked="{Binding IsSelected}"
-                                                  ToolTip="Выбрать элемент"/>
+                                                  ToolTip="Выбрать элемент"
+                                                  Click="ClientSelectCheckBox_Click" />
                                         <!-- Твой контент карточки -->
                                         <Grid>
                                             <Grid.ColumnDefinitions>
@@ -258,16 +278,12 @@
 
             <!-- ===== ПАТЧЕР (заглушка) ===== -->
             <Grid x:Name="PatcherPanel" Visibility="Collapsed">
-                <Border CornerRadius="10" Padding="12" Background="#17212B" Margin="8">
-                    <TextBlock Text="Патчер — скоро тут появятся инструменты."/>
-                </Border>
+                <views:PatcherView />
             </Grid>
 
             <!-- ===== СТЕКЛОВАТА (заглушка) ===== -->
             <Grid x:Name="GlassPanel" Visibility="Collapsed">
-                <Border CornerRadius="10" Padding="12" Background="#17212B" Margin="8">
-                    <TextBlock Text="Стекловата — отдельные утилиты."/>
-                </Border>
+                <views:GlassWoolView />
             </Grid>
 
             <!-- ===== ИНСТРУМЕНТЫ ===== -->

@@ -26,7 +26,7 @@
             <!-- Монитор -->
             <StackPanel Margin="0,0,12,0">
                 <TextBlock Text="Монитор" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                <ComboBox x:Name="MonitorBox" Width="220"/>
+                <ComboBox x:Name="MonitorBox" Width="260"/>
             </StackPanel>
 
             <!-- Пользовательская сетка -->

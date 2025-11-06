@@ -780,5 +780,138 @@ namespace TelegramLauncher
             catch (Win32Exception ex) when (ex.NativeErrorCode == 1223) { return false; }
             catch { return false; }
         }
+        // ======================= КИЛЛЕР ПРОЦЕССОВ TELEGRAM =========================
+        // Вся логика вынесена во вложенный статический класс, чтобы не конфликтовать с твоими именами.
+        private static class TelegramProcessKiller
+        {
+            // Явные исполняемые + подстроки для совпадений
+            private static readonly string[] KillExeNames =
+            {
+        "telegram.exe", "tdesktop.exe",
+        "kotatogram.exe", "unigram.exe",
+        "nekogram.exe", "kibibitogram.exe"
+    };
+
+            private static readonly string[] KillNameContains =
+            {
+        "telegram", "tdesktop", "kotatogram", "unigram", "nekogram", "kibibitogram"
+    };
+
+            // Главная функция: пройтись по процессам и прибить все подходящие
+            public static (int killed, int errors, int total) KillAll()
+            {
+                int killed = 0, errors = 0, total = 0;
+
+                foreach (var p in Process.GetProcesses())
+                {
+                    try
+                    {
+                        string pn = "";
+                        string path = "";
+
+                        try { pn = p.ProcessName ?? ""; } catch { }
+                        try { path = p.MainModule?.FileName ?? ""; } catch { }
+
+                        if (!Matches(pn, path))
+                            continue;
+
+                        total++;
+                        try
+                        {
+                            p.Kill(entireProcessTree: true);
+                            p.WaitForExit(3000);
+                            killed++;
+                        }
+                        catch
+                        {
+                            errors++;
+                        }
+                        finally
+                        {
+                            p.Dispose();
+                        }
+                    }
+                    catch
+                    {
+                        // игнорируем «злые» процессы, к которым нет доступа
+                    }
+                }
+
+                // Доп. «подметание» через taskkill (если доступно в системе)
+                foreach (var exe in KillExeNames)
+                {
+                    try
+                    {
+                        var psi = new ProcessStartInfo
+                        {
+                            FileName = "taskkill",
+                            Arguments = $"/F /T /IM \"{exe}\"",
+                            CreateNoWindow = true,
+                            UseShellExecute = false,
+                            RedirectStandardOutput = true,
+                            RedirectStandardError = true,
+                            WindowStyle = ProcessWindowStyle.Hidden
+                        };
+                        using var tk = Process.Start(psi);
+                        tk?.WaitForExit(200);
+                    }
+                    catch { /* ignore */ }
+                }
+
+                return (killed, errors, total);
+            }
+
+            private static bool Matches(string processName, string fullPath)
+            {
+                if (!string.IsNullOrEmpty(processName))
+                {
+                    if (KillExeNames.Any(n =>
+                            string.Equals(Path.GetFileNameWithoutExtension(n), processName,
+                                          StringComparison.OrdinalIgnoreCase)))
+                        return true;
+
+                    if (KillNameContains.Any(s =>
+                            processName.Contains(s, StringComparison.OrdinalIgnoreCase)))
+                        return true;
+                }
+
+                if (!string.IsNullOrEmpty(fullPath))
+                {
+                    if (KillExeNames.Any(n =>
+                            fullPath.EndsWith(n, StringComparison.OrdinalIgnoreCase)))
+                        return true;
+
+                    if (KillNameContains.Any(s =>
+                            fullPath.IndexOf(s, StringComparison.OrdinalIgnoreCase) >= 0))
+                        return true;
+                }
+
+                return false;
+            }
+        }
+
+        // Обработчик кнопки (по требованию — без подтверждения, «жёсткий» килл)
+        private async void KillTelegram_Click(object sender, RoutedEventArgs e)
+        {
+            // Если захочешь вернуть подтверждение — раскомментируй блок ниже:
+            /*
+            var confirm = await this.ShowMessageAsync(
+                "Киллер Telegram",
+                "Завершить ВСЕ процессы Telegram и форков? Это принудительное действие.",
+                MessageDialogStyle.AffirmativeAndNegative);
+
+            if (confirm != MessageDialogResult.Affirmative)
+                return;
+            */
+
+            var (killed, errors, total) = await Task.Run(TelegramProcessKiller.KillAll);
+
+            await this.ShowMessageAsync(
+                "Готово",
+                $"Найдено: {total}\nЗавершено: {killed}\nОшибок: {errors}");
+        }
+        // ==================== КОНЕЦ: КИЛЛЕР ПРОЦЕССОВ TELEGRAM =====================
+
+
     }
 }

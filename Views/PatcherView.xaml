@@ -1,0 +1,228 @@
+﻿<UserControl x:Class="TelegramLauncher.Views.PatcherView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:iconPacks="http://metro.mahapps.com/winfx/xaml/iconpacks"
+             mc:Ignorable="d" d:DesignHeight="720" d:DesignWidth="1100">
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="12"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <StackPanel Orientation="Horizontal">
+            <TextBlock Text="🧩 Патчер — массовая замена исполняемых файлов" 
+                       FontSize="20" FontWeight="SemiBold" Foreground="White"/>
+        </StackPanel>
+
+        <!-- Вкладки: Лёгкий / Профи -->
+        <TabControl Grid.Row="2" x:Name="ModeTabs">
+            <!-- Лёгкий -->
+            <TabItem Header="Лёгкий режим">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="8"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Верхняя панель -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Каталог для сканирования:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="2" x:Name="EasyRootBox" MinWidth="420" VerticalAlignment="Center"/>
+                        <Button Grid.Column="4" Padding="10,6" Click="PickEasyRoot_Click">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconMaterial Kind="FolderSearch" Width="18" Height="18"/>
+                                <TextBlock Text="  Выбрать..." VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Grid.Column="6" Padding="10,6" Click="ScanEasy_Click" x:Name="ScanEasyBtn">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconMaterial Kind="Magnify" Width="18" Height="18"/>
+                                <TextBlock Text="  Сканировать" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+
+                        <Button Grid.Column="8" Padding="10,6" Click="CancelScan_Click" x:Name="CancelScanBtn" IsEnabled="False">
+                            <StackPanel Orientation="Horizontal">
+                                <iconPacks:PackIconMaterial Kind="CloseCircleOutline" Width="18" Height="18"/>
+                                <TextBlock Text="  Отмена" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+
+                    <!-- Список результатов -->
+                    <Grid Grid.Row="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Источник (по умолчанию): " Foreground="#AAA"/>
+                            <TextBlock x:Name="DefaultSourceExeText" FontWeight="SemiBold"/>
+                        </StackPanel>
+
+                        <ProgressBar Grid.Row="1" x:Name="ScanProgress" Height="8" Margin="0,8,0,8" IsIndeterminate="False" Minimum="0" Maximum="100" Visibility="Collapsed"/>
+
+                        <Border Grid.Row="2" CornerRadius="8" BorderBrush="#2D2D2D" BorderThickness="1">
+                            <ListView x:Name="ExeList"
+                                      SelectionMode="Extended"
+                                      Background="#151515"
+                                      Foreground="White"
+                                      BorderThickness="0"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Auto">
+                                <ListView.Resources>
+                                    <Style TargetType="GridViewColumnHeader">
+                                        <Setter Property="Foreground" Value="White"/>
+                                        <Setter Property="Background" Value="#1F1F1F"/>
+                                    </Style>
+                                </ListView.Resources>
+                                <ListView.View>
+                                    <GridView>
+                                        <GridViewColumn Width="36" Header="✓" DisplayMemberBinding="{Binding SelectionMark}"/>
+                                        <GridViewColumn Width="220" Header="Имя" DisplayMemberBinding="{Binding Name}"/>
+                                        <GridViewColumn Width="700" Header="Путь">
+                                            <GridViewColumn.CellTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock Text="{Binding FullPath}" ToolTip="{Binding FullPath}" />
+                                                </DataTemplate>
+                                            </GridViewColumn.CellTemplate>
+                                        </GridViewColumn>
+                                    </GridView>
+                                </ListView.View>
+                            </ListView>
+                        </Border>
+                    </Grid>
+                </Grid>
+            </TabItem>
+
+            <!-- Профи -->
+            <TabItem Header="Режим ПРО">
+                <Grid Margin="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="6"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="6"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Источник и целевое имя -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Исходный .exe:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="2" x:Name="ProSourceExeBox" MinWidth="380" VerticalAlignment="Center"/>
+                        <Button Grid.Column="4" Padding="10,6" Click="PickProSource_Click">
+                            <iconPacks:PackIconMaterial Kind="FileFindOutline" Width="18" Height="18"/>
+                        </Button>
+                    </Grid>
+
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="16"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="8"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBlock Text="Имя целевого файла:" VerticalAlignment="Center"/>
+                        <TextBox Grid.Column="2" x:Name="ProTargetNameBox" VerticalAlignment="Center" Text="Kibitkogram.exe"/>
+                        <CheckBox Grid.Column="4" x:Name="ProBackupCheck" IsChecked="True" Content="Создавать .bak" VerticalAlignment="Center"/>
+                        <StackPanel Grid.Column="6" Orientation="Horizontal">
+                            <TextBlock Text="Фильтр имён для скана:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                            <TextBox x:Name="ProNameFilterBox" Text="Telegram.exe;Tdesktop.exe;Kibitkogram.exe" MinWidth="280"/>
+                        </StackPanel>
+                    </Grid>
+
+                    <!-- Список -->
+                    <Border Grid.Row="4" CornerRadius="8" BorderBrush="#2D2D2D" BorderThickness="1">
+                        <ListView x:Name="ProExeList"
+                                  SelectionMode="Extended"
+                                  Background="#151515"
+                                  Foreground="White"
+                                  BorderThickness="0">
+                            <ListView.View>
+                                <GridView>
+                                    <GridViewColumn Width="36" Header="✓" DisplayMemberBinding="{Binding SelectionMark}"/>
+                                    <GridViewColumn Width="220" Header="Имя" DisplayMemberBinding="{Binding Name}"/>
+                                    <GridViewColumn Width="700" Header="Путь" DisplayMemberBinding="{Binding FullPath}"/>
+                                </GridView>
+                            </ListView.View>
+                        </ListView>
+                    </Border>
+                </Grid>
+            </TabItem>
+        </TabControl>
+
+        <!-- Низ: состояние и счётчики -->
+        <Grid Grid.Row="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="60"/>
+                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="Найдено:" VerticalAlignment="Center"/>
+            <TextBlock x:Name="FoundCountText" FontWeight="Bold" VerticalAlignment="Center"/>
+
+            <ProgressBar Grid.Column="3" x:Name="PatchProgress" Height="8" Margin="12,0,12,0" Minimum="0" Maximum="100" Visibility="Collapsed"/>
+
+            <StackPanel Grid.Column="4" Orientation="Horizontal">
+                <Button x:Name="ReplaceSelectedBtn" Padding="12,8" Margin="0,0,8,0" Click="ReplaceSelected_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="SwapHorizontal" Width="18" Height="18"/>
+                        <TextBlock Text="  Заменить выбранные"/>
+                    </StackPanel>
+                </Button>
+
+                <Button x:Name="ReplaceAllBtn" Padding="12,8" Click="ReplaceAll_Click">
+                    <StackPanel Orientation="Horizontal">
+                        <iconPacks:PackIconMaterial Kind="AutoFix" Width="18" Height="18"/>
+                        <TextBlock Text="  Заменить всё"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+
+        <!-- Примечание -->
+        <TextBlock Grid.Row="6" Foreground="#AAA" TextWrapping="Wrap">
+            Примечание: в Лёгком режиме исходный файл берётся из папки приложения — Kibitkogram.exe.
+            В режиме ПРО можно выбрать любой .exe, задать имя итогового файла и сохранять .bak.
+        </TextBlock>
+    </Grid>
+</UserControl>
