@@ -5,53 +5,146 @@
                  xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
                  xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
                  mc:Ignorable="d"
-                 Title="Запускатор" Height="720" Width="1200"
+                 Title="Запускатор" Height="740" Width="1220"
                  WindowStartupLocation="CenterOwner">
-    <!-- DataContext задаётся в коде окна -->
-
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="420"/>
+            <ColumnDefinition Width="440"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
+        <Grid.Resources>
+            <!-- Яркие градиенты для кнопок -->
+            <LinearGradientBrush x:Key="PrimaryGrad" StartPoint="0,0" EndPoint="1,1">
+                <GradientStop Color="#FF00C6FF" Offset="0"/>
+                <GradientStop Color="#FF0072FF" Offset="1"/>
+            </LinearGradientBrush>
+            <SolidColorBrush x:Key="PrimaryBorder" Color="#800072FF"/>
+
+            <Style x:Key="PrimaryBtn" TargetType="Button">
+                <Setter Property="Height" Value="48"/>
+                <Setter Property="FontSize" Value="14"/>
+                <Setter Property="Padding" Value="18,8"/>
+                <Setter Property="Margin" Value="8,0"/>
+                <Setter Property="Foreground" Value="White"/>
+                <Setter Property="Background" Value="{StaticResource PrimaryGrad}"/>
+                <Setter Property="BorderBrush" Value="{StaticResource PrimaryBorder}"/>
+                <Setter Property="BorderThickness" Value="1"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border CornerRadius="12" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" >
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" FontFamily="Segoe MDL2 Assets" Margin="12,0,10,0" VerticalAlignment="Center" Text="{TemplateBinding Tag}"/>
+                                    <ContentPresenter Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Grid>
+                            </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter Property="Opacity" Value="0.96"/>
+                                </Trigger>
+                                <Trigger Property="IsPressed" Value="True">
+                                    <Setter Property="Opacity" Value="0.9"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style>
+        </Grid.Resources>
+
         <!-- Левая панель -->
         <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
-            <StackPanel Margin="16" Orientation="Vertical">
-                <TextBlock Text="Режим" FontWeight="Bold" Margin="0,0,0,8"/>
-                <ComboBox SelectedIndex="{Binding ModeIndex}" Margin="0,0,0,12">
-                    <ComboBoxItem Content="Автоматический"/>
-                    <ComboBoxItem Content="По сетке"/>
-                    <ComboBoxItem Content="Хаотичная"/>
-                    <ComboBoxItem Content="Пользовательская (горизонталь)"/>
-                    <ComboBoxItem Content="Пользовательская (вертикаль)"/>
-                </ComboBox>
+            <StackPanel Margin="16" Orientation="Vertical" >
+                <Border Padding="12" CornerRadius="12" Background="#232B">
+                    <StackPanel>
+                        <TextBlock Text="Режим запуска" FontWeight="Bold" Margin="0,0,0,8"/>
+                        <ComboBox SelectedIndex="{Binding ModeIndex}" Margin="0,0,0,12">
+                            <ComboBoxItem Content="Автоматический"/>
+                            <ComboBoxItem Content="По сетке"/>
+                            <ComboBoxItem Content="Хаотичная"/>
+                            <ComboBoxItem Content="Пользовательская (горизонталь)"/>
+                            <ComboBoxItem Content="Пользовательская (вертикаль)"/>
+                        </ComboBox>
 
-                <TextBlock Text="Монитор" FontWeight="Bold" Margin="0,8,0,8"/>
-                <ComboBox ItemsSource="{Binding Monitors}" SelectedIndex="{Binding MonitorIndex}" />
-
-                <TextBlock Text="Виртуальный рабочий стол" FontWeight="Bold" Margin="0,8,0,8"/>
-                <ComboBox ItemsSource="{Binding VirtualDesktops}" SelectedIndex="{Binding VirtualDesktopIndex}" />
+                        <TextBlock Text="Монитор" FontWeight="Bold" Margin="0,8,0,6"/>
+                        <ComboBox ItemsSource="{Binding Monitors}" SelectedIndex="{Binding MonitorIndex}" />
+                    </StackPanel>
+                </Border>
 
                 <Separator Margin="0,12,0,12"/>
 
-                <TextBlock Text="Автоматический конструктор" FontWeight="Bold" Margin="0,0,0,8"/>
-                <Border BorderBrush="{DynamicResource AccentColorBrush}" BorderThickness="1" CornerRadius="8" Height="260" Background="#22000000">
-                    <Grid>
-                        <TextBlock Text="Превью раскладки (скоро)"
-                                   Foreground="{DynamicResource AccentColorBrush}"
-                                   VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                    </Grid>
-                </Border>
+                <Border Padding="12" CornerRadius="12" Background="#22374d">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="Автоматический конструктор" FontWeight="Bold" Foreground="#AADDFF" />
+                            <TextBlock Text="{Binding ConstructorFitCount}" Foreground="#AADDFF" FontWeight="Bold" Margin="8,0,0,0"/>
+                            <TextBlock Text="из" Foreground="#AADDFF" Margin="4,0"/>
+                            <TextBlock Text="{Binding SelectedCount}" Foreground="#AADDFF" FontWeight="Bold"/>
+                        </StackPanel>
 
-                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
-                    <Button Content="Очистить конструктор" Command="{Binding ClearConstructorCmd}" Margin="0,0,8,0"/>
-                    <Button Content="Сохранить по умолчанию" Command="{Binding SaveDefaultCmd}"/>
-                </StackPanel>
+                        <Grid Margin="0,6,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel>
+                                <TextBlock Text="Колонки" Margin="0,0,0,4" Foreground="#D0E8FF"/>
+                                <mah:NumericUpDown Minimum="1" Maximum="12" Value="{Binding ConstructorCols, Mode=TwoWay}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                <TextBlock Text="Строки" Margin="0,0,0,4" Foreground="#D0E8FF"/>
+                                <mah:NumericUpDown Minimum="1" Maximum="12" Value="{Binding ConstructorRows, Mode=TwoWay}" />
+                            </StackPanel>
+
+                            <Button Grid.Column="2" Margin="12,18,0,0" Style="{StaticResource PrimaryBtn}" Tag="&#xE8B2;" Content="Автоподбор" Command="{Binding AutoFitConstructorCmd}"/>
+                        </Grid>
+
+                        <!-- Превью: контейнер фикс. высоты, вертикальный скролл -->
+                        <Border BorderBrush="#66A6D8" BorderThickness="1" CornerRadius="10" Background="#113049" Padding="8" Height="260">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding PreviewBoxes}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="{Binding ConstructorCols}" Rows="{Binding ConstructorRows}" IsItemsHost="True"/>
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border Height="56" Margin="6" CornerRadius="8">
+                                                <Border.Background>
+                                                    <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                        <GradientStop Color="#FF2196F3" Offset="0"/>
+                                                        <GradientStop Color="#FF26C6DA" Offset="1"/>
+                                                    </LinearGradientBrush>
+                                                </Border.Background>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Border>
+
+                        <!-- Подсказка по выбору клиентов -->
+                        <TextBlock Margin="0,8,0,0" TextWrapping="Wrap"
+                                   Foreground="#D0E8FF" Opacity="0.9" FontStyle="Italic">
+                            Подсказка: выбирай клиентов кликом мыши; 
+                            удерживай Ctrl — чтобы добавить/снять выбор; 
+                            удерживай Shift — чтобы выделить диапазон.
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
             </StackPanel>
         </ScrollViewer>
 
-        <!-- Правая панель -->
+        <!-- Правая панель: вертикальный список клиентов (карточки как в каталоге) -->
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
@@ -59,57 +152,100 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- Панель сортировки -->
-            <StackPanel Orientation="Horizontal" Margin="16">
+            <!-- Верх: сортировка -->
+            <StackPanel Orientation="Horizontal" Margin="16" >
                 <TextBlock Text="Клиенты" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Margin="0,0,8,0"/>
                 <Separator VerticalAlignment="Center" Width="1" Margin="4,0"/>
-                <TextBlock Text="Сортировать:" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                <Button Content="Название" Command="{Binding SortByNameCmd}" Margin="4,0"/>
-                <Button Content="Дата" Command="{Binding SortByDateCmd}" Margin="4,0"/>
-                <Button Content="Статус" Command="{Binding SortByStatusCmd}" Margin="4,0"/>
-
-                <Separator VerticalAlignment="Center" Width="1" Margin="12,0"/>
-                <TextBlock Text="Колонки:" VerticalAlignment="Center" Margin="8,0,0,0"/>
-                <Button Content="1" Command="{Binding SetColumnsCmd}" CommandParameter="1" Margin="4,0"/>
-                <Button Content="2" Command="{Binding SetColumnsCmd}" CommandParameter="2" Margin="4,0"/>
-                <Button Content="3" Command="{Binding SetColumnsCmd}" CommandParameter="3" Margin="4,0"/>
+                <TextBlock Text="Сортировка" VerticalAlignment="Center" Margin="8,0,6,0"/>
+                <ComboBox ItemsSource="{Binding SortOptions}" SelectedItem="{Binding SelectedSort}" Width="240" />
             </StackPanel>
 
-            <!-- Список клиентов -->
-            <ScrollViewer Grid.Row="1">
-                <ItemsControl ItemsSource="{Binding ClientsView}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <UniformGrid Columns="{Binding Columns}" IsItemsHost="True"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border Margin="12" Padding="10" CornerRadius="10" BorderThickness="1"
-                                    BorderBrush="{Binding StatusBrush}" Background="#22000000">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-                                    <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" Margin="0,0,8,0" VerticalAlignment="Center"/>
-                                    <StackPanel Grid.Column="1">
-                                        <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold"/>
-                                        <TextBlock Text="{Binding Client.ExePath}" Opacity="0.7" FontSize="12"/>
-                                    </StackPanel>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
+            <!-- Список: одна колонка, «карточки товара» -->
+            <ListBox x:Name="ClientsList"
+                     Grid.Row="1"
+                     ItemsSource="{Binding ClientsView}"
+                     SelectionMode="Extended"
+                     SelectionChanged="ClientsList_SelectionChanged"
+                     BorderThickness="0"
+                     Background="Transparent"
+                     ScrollViewer.VerticalScrollBarVisibility="Auto"
+                     VirtualizingPanel.IsVirtualizing="True"
+                     VirtualizingPanel.ScrollUnit="Item">
+                <ListBox.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <VirtualizingStackPanel/>
+                    </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
 
-            <!-- Низ: счётчик + кнопки -->
+                <ListBox.ItemContainerStyle>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="IsSelected" Value="{Binding IsChecked, Mode=TwoWay}"/>
+                        <Setter Property="Margin" Value="10,10"/>
+                    </Style>
+                </ListBox.ItemContainerStyle>
+
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border CornerRadius="12" BorderThickness="1" BorderBrush="{Binding StatusStrokeBrush}" Background="{Binding StatusFillBrush}" >
+                            <Border.Effect>
+                                <DropShadowEffect Color="#66000000" BlurRadius="10" ShadowDepth="2"/>
+                            </Border.Effect>
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <!-- «шапка карточки» как в каталоге -->
+                                    <RowDefinition Height="64"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="10"/>
+                                </Grid.RowDefinitions>
+
+                                <!-- Шапка: цветная плашка с иконкой и статусом -->
+                                <Grid Grid.Row="0">
+                                    <Grid.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="#22000000" Offset="0"/>
+                                            <GradientStop Color="#11000000" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Grid.Background>
+                                    <DockPanel Margin="12">
+                                        <TextBlock DockPanel.Dock="Right"
+                                                   FontFamily="Segoe MDL2 Assets"
+                                                   Text="&#xE73E;" FontSize="20"
+                                                   Foreground="{Binding TextBrush}" VerticalAlignment="Center"/>
+                                        <Border CornerRadius="6" Padding="8,4" Background="#33000000" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal" >
+                                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE7C1;" Margin="0,0,6,0" Foreground="{Binding TextBrush}"/>
+                                                <TextBlock Text="{Binding StatusText}" Foreground="{Binding TextBrush}" FontWeight="SemiBold"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DockPanel>
+                                </Grid>
+
+                                <!-- Название + чек -->
+                                <DockPanel Grid.Row="1" Margin="12,10,12,0">
+                                    <CheckBox IsChecked="{Binding IsChecked, Mode=TwoWay}" IsHitTestVisible="False" Margin="0,0,8,0" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding DisplayName}" FontSize="15" FontWeight="Bold" Foreground="{Binding TextBrush}" />
+                                </DockPanel>
+
+                                <!-- Путь -->
+                                <TextBlock Grid.Row="2" Margin="12,2,12,0" Text="{Binding Client.ExePath}" Opacity="0.85" Foreground="{Binding TextBrush}" FontSize="12"/>
+
+                                <!-- Дата -->
+                                <TextBlock Grid.Row="3" Margin="12,6,12,10" Text="{Binding LastWriteDisplay}" Opacity="0.8" Foreground="{Binding TextBrush}" FontSize="12"/>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+
+            <!-- Низ: яркие кнопки -->
             <DockPanel Grid.Row="2" Margin="16">
                 <TextBlock Text="{Binding CounterText}" VerticalAlignment="Center" />
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                    <Button Content="Запуск" Command="{Binding LaunchSelectedCmd}" Margin="8,0"/>
-                    <Button Content="Запустить С..." Command="{Binding LaunchWithCriteriaCmd}" Margin="8,0"/>
+                    <Button Style="{StaticResource PrimaryBtn}" Tag="&#xE768;" Content="Запуск" Command="{Binding LaunchSelectedCmd}" Width="114"/>
+                    <Button Style="{StaticResource PrimaryBtn}" Tag="&#xE8B5;" Content="Из конструктора" Command="{Binding LaunchFromConstructorCmd}" Width="166"/>
                 </StackPanel>
             </DockPanel>
         </Grid>

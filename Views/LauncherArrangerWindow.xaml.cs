@@ -1,31 +1,30 @@
-using System.Collections.Generic;
-using System.Linq;
-using System.Windows;
-using TelegramLauncher.Models;
+using MahApps.Metro.Controls;
+using System.Windows.Controls;
 using TelegramLauncher.ViewModels;
 
 namespace TelegramLauncher.Views
 {
-    public partial class LauncherArrangerWindow : MahApps.Metro.Controls.MetroWindow
+    public partial class LauncherArrangerWindow : MetroWindow
     {
+        private ArrangerViewModel? VM => DataContext as ArrangerViewModel;
+
         public LauncherArrangerWindow()
         {
             InitializeComponent();
-
-            // Рантайм-DataContext задаём здесь — дизайнеру так проще жить.
-            if (DataContext == null)
-                DataContext = new ArrangerViewModel();
         }
 
-        public LauncherArrangerWindow(IEnumerable<ClientConfig> clients) : this()
+        // РЎРёРЅС…СЂРѕРЅРёР·РёСЂСѓРµРј РІС‹РґРµР»РµРЅРёРµ ListBox СЃ С„Р»Р°РіРѕРј IsChecked Сѓ VM
+        private void ClientsList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (this.DataContext is ArrangerViewModel vm && clients != null)
-            {
-                foreach (var c in clients)
-                    vm.Clients.Add(new ClientItemVM(c));
+            if (VM is null) return;
 
-                vm.RaiseCounters();
-            }
+            foreach (var it in e.AddedItems)
+                if (it is ClientItemVM c) c.IsChecked = true;
+
+            foreach (var it in e.RemovedItems)
+                if (it is ClientItemVM c) c.IsChecked = false;
+
+            VM.RaiseCounters();
         }
     }
 }
