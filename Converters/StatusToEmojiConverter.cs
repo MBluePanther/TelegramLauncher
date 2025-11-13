@@ -1,25 +1,27 @@
-﻿using System;
+
+using System;
 using System.Globalization;
 using System.Windows.Data;
 using TelegramLauncher.Models;
 
 namespace TelegramLauncher.Converters
 {
-    public class StatusToEmojiConverter : IValueConverter
+    public sealed class StatusToEmojiConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is not ClientStatus st) return "";
-            return st switch
+            if (value is ClientStatus st)
             {
-                ClientStatus.Active => "😊",
-                ClientStatus.Frozen => "😠",
-                ClientStatus.Crash => "💀",
-                _ => ""
-            };
+                return st switch
+                {
+                    ClientStatus.Active => "🟢",
+                    ClientStatus.Frozen => "🟡",
+                    ClientStatus.Crash  => "🔴",
+                    _ => "⚪"
+                };
+            }
+            return "⚪";
         }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-            Binding.DoNothing;
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => Binding.DoNothing;
     }
 }

@@ -104,9 +104,6 @@
                             </StackPanel>
 
                             <Button Margin="44,10,10,0" Style="{StaticResource PrimaryBtn}" Tag="&#xE8B2;" Content="Автоподбор" Command="{Binding AutoFitConstructorCmd}" Grid.Column="1">
-                                <Button.Effect>
-                                    <DropShadowEffect/>
-                                </Button.Effect>
                             </Button>
                         </Grid>
 

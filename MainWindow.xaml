@@ -8,10 +8,11 @@
     xmlns:conv="clr-namespace:TelegramLauncher.Converters"
     xmlns:views="clr-namespace:TelegramLauncher.Views"
     xmlns:notif="clr-namespace:TelegramLauncher.Notifications"
+    xmlns:converters="clr-namespace:TelegramLauncher.Converters"
     Title="TELEGRAM LAUNCHER"
     Height="720" Width="1100"
     WindowStartupLocation="CenterScreen"
-    GlowBrush="{DynamicResource AccentColorBrush}">
+    GlowBrush="{DynamicResource AccentColorBrush}" xmlns:controls="clr-namespace:TelegramLauncher.Views.Controls">
 
     <!-- РЕСУРСЫ -->
     <mah:MetroWindow.Resources>
@@ -32,6 +33,10 @@
                         <StackPanel Orientation="Horizontal">
                             <iconPacks:PackIconMaterial Kind="Home" Width="18" Height="18"/>
                             <TextBlock Text="Лаунчер" Margin="6,0,0,0"/>
+
+                            <Separator Margin="0,12,0,8"/>
+                            <TextBlock Text="Тема" Opacity="0.7" Margin="0,0,0,6"/>
+                            <controls:ThemeBar/>
                         </StackPanel>
                     </Button>
                     <Button Padding="10,6" Margin="0,0,0,6" Click="MenuArranger_Click">
@@ -40,16 +45,10 @@
                             <TextBlock Text="Запускатор" Margin="6,0,0,0"/>
                         </StackPanel>
                     </Button>
-                    <Button Padding="10,6" Margin="0,0,0,6" Click="MenuMarkup_Click">
+                    <Button Padding="10,6" Margin="0,0,0,6" Click="MenuSorter_Click">
                         <StackPanel Orientation="Horizontal">
-                            <iconPacks:PackIconMaterial Kind="GridLarge" Width="18" Height="18"/>
-                            <TextBlock Text="Разметка" Margin="6,0,0,0"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Padding="10,6" Margin="0,0,0,6" Click="MenuPatcher_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <iconPacks:PackIconMaterial Kind="ToolboxOutline" Width="18" Height="18"/>
-                            <TextBlock Text="Патчер" Margin="6,0,0,0"/>
+                            <iconPacks:PackIconMaterial Kind="FolderCogOutline" Width="18" Height="18"/>
+                            <TextBlock Text="Сортировщик" Margin="6,0,0,0"/>
                         </StackPanel>
                     </Button>
                     <Button x:Name="MenuGlassButton"
@@ -89,12 +88,15 @@
                     <iconPacks:PackIconMaterial Kind="Menu" Width="18" Height="18"/>
                     <TextBlock Text="Меню" Margin="6,0,0,0"/>
                 </StackPanel>
+
             </Button>
+
             <TextBlock x:Name="HeaderText"
                        Text="Мои Telegram-клиенты"
                        VerticalAlignment="Center"
                        FontSize="18" FontWeight="SemiBold"
                        Margin="12,0,0,0"/>
+
         </DockPanel>
 
         <!-- СЕКЦИИ -->
@@ -136,8 +138,20 @@
                         <StackPanel Orientation="Horizontal">
                             <iconPacks:PackIconMaterial Kind="DeleteSweepOutline" Width="18" Height="18"/>
                             <TextBlock Text="Удалить выбранные" Margin="6,0,0,0"/>
+
                         </StackPanel>
                     </Button>
+                    <Button x:Name="OpenSelectedButton" 
+                               Margin="8,0,0,0"
+                                   Padding="12,6"
+                                          ToolTip="Открыть отмеченные галочками"
+                                  Click="OpenSelected_Click">
+                        <StackPanel Orientation="Horizontal">
+                            <iconPacks:PackIconMaterial Kind="PlayCircleOutline" Width="18" Height="18" Margin="0,0,8,0"/>
+                            <TextBlock Text="Открыть выбранные"/>
+                        </StackPanel>
+                    </Button>
+
                     <Button x:Name="KillAllTgButton"
         Margin="8,0,0,0"
         Padding="10,6"
@@ -149,6 +163,13 @@
                             <TextBlock Text="  Убить все Telegram" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Button>
+
+                    <!-- Статус при закрытии (по умолчанию выключен) -->
+                    <StackPanel Orientation="Horizontal" Margin="16,0,0,0" VerticalAlignment="Center">
+                        <TextBlock Text="Статус при закрытии" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <mah:ToggleSwitch x:Name="StatusOnExitToggle"/>
+                    </StackPanel>
+
                 </StackPanel>
 
                 <!-- Прогресс поиска -->
@@ -232,8 +253,8 @@
                                                 <Button.ContextMenu>
                                                     <ContextMenu>
                                                         <MenuItem Header="Актив"     Tag="Active" Click="StatusMenu_Click"/>
-                                                        <MenuItem Header="Заморожен" Tag="Frozen" Click="StatusMenu_Click"/>
-                                                        <MenuItem Header="Слёт"      Tag="Crash"  Click="StatusMenu_Click"/>
+                                                        <MenuItem Header="Спам" Tag="Frozen" Click="StatusMenu_Click"/>
+                                                        <MenuItem Header="Фриз"      Tag="Crash"  Click="StatusMenu_Click"/>
                                                     </ContextMenu>
                                                 </Button.ContextMenu>
                                             </Button>

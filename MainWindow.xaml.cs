@@ -43,6 +43,18 @@ namespace TelegramLauncher
         public MainWindow()
         {
             InitializeComponent();
+            StatusOnExitService.Enabled = true;
+            if (StatusOnExitToggle != null)
+            {
+                StatusOnExitToggle.IsOn = true;
+                StatusOnExitToggle.Toggled += (_, __) =>
+                    StatusOnExitService.Enabled = StatusOnExitToggle.IsOn;
+            }
+
+            TelegramLauncher.Services.StatusOnExitService.Enabled = StatusOnExitToggle?.IsOn == true;
+            StatusOnExitToggle.Toggled += (_, __) =>
+                TelegramLauncher.Services.StatusOnExitService.Enabled = StatusOnExitToggle.IsOn;
+
             ClientsList.ItemsSource = Clients;
 
             foreach (var c in ClientStore.Load())
@@ -456,13 +468,18 @@ namespace TelegramLauncher
 
             try
             {
-                Process.Start(new ProcessStartInfo
+                var proc = Process.Start(new ProcessStartInfo
                 {
                     FileName = cfg.ExePath,
                     Arguments = cfg.Arguments ?? "",
                     WorkingDirectory = Path.GetDirectoryName(cfg.ExePath)!,
                     UseShellExecute = true
                 });
+                if (proc != null)
+                    TelegramLauncher.Services.StatusOnExitService.Track(proc, cfg, this.Dispatcher);
+
+                if (proc != null)
+                    TelegramLauncher.Services.StatusOnExitService.Track(proc, cfg, this.Dispatcher);
             }
             catch (Exception ex)
             {
@@ -481,14 +498,17 @@ namespace TelegramLauncher
 
                 try
                 {
-                    Process.Start(new ProcessStartInfo
+                    var proc = Process.Start(new ProcessStartInfo
                     {
                         FileName = cfg.ExePath,
                         Arguments = cfg.Arguments ?? "",
                         WorkingDirectory = Path.GetDirectoryName(cfg.ExePath)!,
                         UseShellExecute = true
                     });
+                    if (proc != null)
+                        TelegramLauncher.Services.StatusOnExitService.Track(proc, cfg, this.Dispatcher);
                     started++;
+
                 }
                 catch { skipped++; }
             }
@@ -898,21 +918,29 @@ namespace TelegramLauncher
         // Обработчик кнопки (по требованию — без подтверждения, «жёсткий» килл)
         private async void KillTelegram_Click(object sender, RoutedEventArgs e)
         {
+            // Подтверждение
             var confirm = await this.ShowMessageAsync(
-                "Киллер Telegram",
-                "Завершить ВСЕ процессы Telegram и форков? Это принудительное действие.",
+                "Подтверждение",
+                "Убить все процессы Telegram?\nЭто завершит работу всех клиентов.",
                 MessageDialogStyle.AffirmativeAndNegative);
 
             if (confirm != MessageDialogResult.Affirmative)
                 return;
 
+            // Важно: подавляем показ «статуса при закрытии» для принудительно убитых процессов
+            int killed, errors, total;
+            using (TelegramLauncher.Services.StatusOnExitService.SuppressKillAll())
+            {
+                (killed, errors, total) = await Task.Run(TelegramProcessKiller.KillAll);
+            }
 
-            var (killed, errors, total) = await Task.Run(TelegramProcessKiller.KillAll);
-
+            // Отчёт пользователю
             await this.ShowMessageAsync(
                 "Готово",
-                $"Найдено: {total}\nЗавершено: {killed}\nОшибок: {errors}");
+                $"Найдено: {total}\nЗавершено: {killed}\nОшибок: {errors}",
+                MessageDialogStyle.Affirmative);
         }
+
         // ==================== КОНЕЦ: КИЛЛЕР ПРОЦЕССОВ TELEGRAM =====================
 
 

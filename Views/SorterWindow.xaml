@@ -1,0 +1,150 @@
+<mah:MetroWindow x:Class="TelegramLauncher.Views.SorterWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
+                 xmlns:models="clr-namespace:TelegramLauncher.Models"
+                 Title="Сортировщик"
+                 Width="1100"
+                 Height="680"
+                 WindowStartupLocation="CenterOwner"
+                 ResizeMode="CanResizeWithGrip">
+
+    <!-- Локальные ресурсы -->
+    <mah:MetroWindow.Resources>
+
+        <!-- Кисти статусов -->
+        <SolidColorBrush x:Key="StatusBrushActive" Color="#4CAF50"/>
+        <SolidColorBrush x:Key="StatusBrushFrozen" Color="#FFC107"/>
+        <SolidColorBrush x:Key="StatusBrushCrash"  Color="#F44336"/>
+        <SolidColorBrush x:Key="StatusBrushNeutral" Color="#808080"/>
+
+        <!-- Призрачная кнопка -->
+        <Style x:Key="GhostButton"
+               TargetType="Button"
+               BasedOn="{StaticResource MahApps.Styles.Button.Flat}">
+            <Setter Property="Background"      Value="Transparent"/>
+            <Setter Property="BorderBrush"     Value="{DynamicResource MahApps.Brushes.Control.Border}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding"         Value="12,6"/>
+            <Setter Property="mah:ControlsHelper.CornerRadius" Value="8"/>
+            <Setter Property="HorizontalAlignment" Value="Left"/>
+        </Style>
+
+        <!-- Основная кнопка -->
+        <Style x:Key="PrimaryButton"
+               TargetType="Button"
+               BasedOn="{StaticResource MahApps.Styles.Button}">
+            <Setter Property="Foreground"      Value="{DynamicResource MahApps.Brushes.IdealForeground}"/>
+            <Setter Property="Background"      Value="{DynamicResource MahApps.Brushes.Accent}"/>
+            <Setter Property="BorderBrush"     Value="{DynamicResource MahApps.Brushes.Accent2}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding"         Value="12,6"/>
+            <Setter Property="mah:ControlsHelper.CornerRadius" Value="8"/>
+        </Style>
+
+        <!-- Шаблон ячейки статуса: кружок + иконка + текст -->
+        <DataTemplate x:Key="StatusCellTemplate">
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                <Ellipse x:Name="Dot" Width="10" Height="10" Fill="{StaticResource StatusBrushNeutral}"/>
+                <TextBlock x:Name="Icon" Text="⚪" Margin="6,0,0,0" VerticalAlignment="Center"/>
+                <TextBlock Text="{Binding Status}" Margin="6,0,0,0" Opacity="0.7"/>
+            </StackPanel>
+            <DataTemplate.Triggers>
+                <DataTrigger Binding="{Binding Status}" Value="{x:Static models:ClientStatus.Active}">
+                    <Setter TargetName="Dot"  Property="Shape.Fill"      Value="{StaticResource StatusBrushActive}"/>
+                    <Setter TargetName="Icon" Property="TextBlock.Text"  Value="🟢"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="{x:Static models:ClientStatus.Frozen}">
+                    <Setter TargetName="Dot"  Property="Shape.Fill"      Value="{StaticResource StatusBrushFrozen}"/>
+                    <Setter TargetName="Icon" Property="TextBlock.Text"  Value="🟡"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding Status}" Value="{x:Static models:ClientStatus.Crash}">
+                    <Setter TargetName="Dot"  Property="Shape.Fill"      Value="{StaticResource StatusBrushCrash}"/>
+                    <Setter TargetName="Icon" Property="TextBlock.Text"  Value="🔴"/>
+                </DataTrigger>
+            </DataTemplate.Triggers>
+        </DataTemplate>
+
+    </mah:MetroWindow.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок/описание -->
+        <StackPanel Orientation="Vertical" Margin="0,0,0,12">
+            <TextBlock Text="Сортировщик клиентов" FontSize="20" FontWeight="SemiBold"/>
+            <TextBlock Text="Отметь клиентов чекбоксами, выбери папку и нажми «Отсортировать»."
+                       Opacity="0.7" Margin="0,4,0,0"/>
+        </StackPanel>
+
+        <!-- Таблица -->
+        <DataGrid x:Name="ClientsGrid"
+                  Grid.Row="1"
+                  ItemsSource="{Binding Clients}"
+                  AutoGenerateColumns="False"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  SelectionMode="Extended"
+                  HeadersVisibility="Column"
+                  IsReadOnly="False">
+
+            <DataGrid.Columns>
+                <!-- Выбор -->
+                <DataGridCheckBoxColumn Header="✓" Binding="{Binding IsSelected, Mode=TwoWay}" Width="40"/>
+
+                <!-- Клиент -->
+                <DataGridTextColumn Header="КЛИЕНТ" Binding="{Binding Name}" Width="*" />
+
+                <!-- Статус: цвет + иконка + текст -->
+                <DataGridTemplateColumn Header="СТАТУС" Width="180" CellTemplate="{StaticResource StatusCellTemplate}"/>
+
+                <!-- Последний запуск -->
+                <DataGridTextColumn Header="ПОСЛЕДНИЙ ЗАПУСК"
+                                    Binding="{Binding LastOpenedUtc, StringFormat={}{0:dd.MM.yyyy HH:mm}, TargetNullValue=—}"
+                                    Width="170"/>
+
+                <!-- Папка -->
+                <DataGridTextColumn Header="ПАПКА" Binding="{Binding ExePath}" Width="300"/>
+
+                <!-- TDATA присутствует (чекбокс только для чтения) -->
+                <DataGridCheckBoxColumn Header="TDATA"
+                                        Binding="{Binding TDataExists, Mode=OneWay}"
+                                        IsReadOnly="True"
+                                        Width="80"/>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Нижняя панель -->
+        <Grid Grid.Row="2" Margin="0,12,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Column="0">
+                <TextBlock Text="Папка назначения:" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                <TextBox Width="380" Margin="0,0,8,0"
+                         Text="{Binding DestinationFolder, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Content="Обзор" Style="{StaticResource GhostButton}"
+                        Command="{Binding BrowseDestinationCommand}"/>
+            </StackPanel>
+
+            <Button Grid.Column="1" Margin="8,0,0,0"
+                    Style="{StaticResource PrimaryButton}"
+                    Content="Отсортировать"
+                    IsEnabled="{Binding CanSort}"
+                    Command="{Binding SortCommand}"/>
+
+            <Button Grid.Column="2" Margin="8,0,0,0"
+                    Style="{StaticResource GhostButton}"
+                    Content="Откат"
+                    IsEnabled="{Binding CanUndo}"
+                    Command="{Binding UndoCommand}"/>
+        </Grid>
+    </Grid>
+</mah:MetroWindow>

@@ -1,4 +1,5 @@
-﻿using System;
+
+using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
@@ -6,26 +7,23 @@ using TelegramLauncher.Models;
 
 namespace TelegramLauncher.Converters
 {
-    public class StatusToBrushConverter : IValueConverter
+    public sealed class StatusToBrushConverter : IValueConverter
     {
-        private static SolidColorBrush B(byte r, byte g, byte b) =>
-            new SolidColorBrush(Color.FromRgb(r, g, b));
-
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var def = B(23, 33, 43); // тёмно-синий фон по умолчанию
-            if (value is not ClientStatus st) return def;
-
-            return st switch
+            SolidColorBrush brush = Brushes.Gray;
+            if (value is ClientStatus st)
             {
-                ClientStatus.Active => B(46, 204, 113), // зелёный
-                ClientStatus.Frozen => B(243, 156, 18), // оранжевый
-                ClientStatus.Crash => B(231, 76, 60),  // красный
-                _ => def
-            };
+                switch (st)
+                {
+                    case ClientStatus.Active:  brush = new SolidColorBrush(Color.FromRgb(76, 175, 80)); break;  // green
+                    case ClientStatus.Frozen:  brush = new SolidColorBrush(Color.FromRgb(255, 193, 7)); break;  // amber
+                    case ClientStatus.Crash:   brush = new SolidColorBrush(Color.FromRgb(244, 67, 54)); break; // red
+                }
+            }
+            if (brush.CanFreeze) brush.Freeze();
+            return brush;
         }
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-            Binding.DoNothing;
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) => Binding.DoNothing;
     }
 }
