@@ -110,7 +110,7 @@
                             </Button>
                         </Grid>
 
-                        <Border BorderBrush="#66A6D8" BorderThickness="1" CornerRadius="10" Padding="8" Height="260" Background="#FF3C3C3C">
+                        <Border BorderBrush="#66A6D8" BorderThickness="1" CornerRadius="10" Background="#113049" Padding="8" Height="260">
                             <ScrollViewer VerticalScrollBarVisibility="Auto">
                                 <ItemsControl ItemsSource="{Binding PreviewBoxes}">
                                     <ItemsControl.ItemsPanel>
@@ -234,28 +234,8 @@
             <DockPanel Grid.Row="2" Margin="16">
                 <TextBlock Text="{Binding CounterText}" VerticalAlignment="Center" />
                 <StackPanel Orientation="Horizontal" DockPanel.Dock="Right">
-                    <Button Style="{StaticResource PrimaryBtn}" Tag="&#xE768;" Content="Запуск" Command="{Binding LaunchSelectedCmd}" Width="109" HorizontalAlignment="Center" VerticalAlignment="Center" FontWeight="Bold">
-                        <Button.Effect>
-                            <DropShadowEffect/>
-                        </Button.Effect>
-                        <Button.Background>
-                            <LinearGradientBrush>
-                                <GradientStop Color="#FF00FFCA"/>
-                                <GradientStop Color="#FF0061FF" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Button.Background>
-                    </Button>
-                    <Button Style="{StaticResource PrimaryBtn}" Tag="&#xE8B5;" Content="Из конструктора" Command="{Binding LaunchFromConstructorCmd}" Width="177" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center">
-                        <Button.Effect>
-                            <DropShadowEffect/>
-                        </Button.Effect>
-                        <Button.Background>
-                            <LinearGradientBrush>
-                                <GradientStop Color="#FF00FFB3"/>
-                                <GradientStop Color="#FFF100FF" Offset="1"/>
-                            </LinearGradientBrush>
-                        </Button.Background>
-                    </Button>
+                    <Button Style="{StaticResource PrimaryBtn}" Tag="&#xE768;" Content="Запуск" Command="{Binding LaunchSelectedCmd}"/>
+                    <Button Style="{StaticResource PrimaryBtn}" Tag="&#xE8B5;" Content="Из конструктора" Command="{Binding LaunchFromConstructorCmd}"/>
                 </StackPanel>
             </DockPanel>
         </Grid>
