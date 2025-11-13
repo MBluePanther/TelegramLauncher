@@ -59,9 +59,9 @@
         <!-- Левая панель -->
         <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto">
             <StackPanel Margin="16" Orientation="Vertical" >
-                <Border Padding="12" CornerRadius="12" Background="#232B">
+                <Border Padding="12" CornerRadius="12" Background="#FF4E4E4E">
                     <StackPanel>
-                        <TextBlock Text="Режим запуска" FontWeight="Bold" Margin="0,0,0,8"/>
+                        <TextBlock Text="Режим запуска" FontWeight="Bold" Margin="0,0,0,8" Foreground="White"/>
                         <ComboBox SelectedIndex="{Binding ModeIndex}" Margin="0,0,0,12">
                             <ComboBoxItem Content="Автоматический"/>
                             <ComboBoxItem Content="По сетке"/>
@@ -70,14 +70,14 @@
                             <ComboBoxItem Content="Пользовательская (вертикаль)"/>
                         </ComboBox>
 
-                        <TextBlock Text="Монитор" FontWeight="Bold" Margin="0,8,0,6"/>
+                        <TextBlock Text="Монитор" FontWeight="Bold" Margin="0,8,0,6" Foreground="White"/>
                         <ComboBox ItemsSource="{Binding Monitors}" SelectedIndex="{Binding MonitorIndex}" />
                     </StackPanel>
                 </Border>
 
                 <Separator Margin="0,12,0,12"/>
 
-                <Border Padding="12" CornerRadius="12" Background="#22374d">
+                <Border Padding="12" CornerRadius="12" Background="#FF4E4E4E">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                             <TextBlock Text="Автоматический конструктор" FontWeight="Bold" Foreground="#AADDFF" />
@@ -93,17 +93,18 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
 
-                            <StackPanel>
-                                <TextBlock Text="Колонки" Margin="0,0,0,4" Foreground="#D0E8FF"/>
-                                <mah:NumericUpDown Minimum="1" Maximum="12" Value="{Binding ConstructorCols, Mode=TwoWay}" />
+                            <StackPanel Margin="0,0,56,0">
+                                <TextBlock Text="Колонки" Margin="0,0,0,4" Foreground="#D0E8FF" Width="111"/>
+                                <mah:NumericUpDown Minimum="1" Maximum="12" Value="{Binding ConstructorCols, Mode=TwoWay}" Width="112" />
                             </StackPanel>
 
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <TextBlock Text="Строки" Margin="0,0,0,4" Foreground="#D0E8FF"/>
-                                <mah:NumericUpDown Minimum="1" Maximum="12" Value="{Binding ConstructorRows, Mode=TwoWay}" />
+                            <StackPanel Margin="120,0,138,0" Grid.ColumnSpan="2">
+                                <TextBlock Text="Строки" Margin="0,0,0,4" Foreground="#D0E8FF" Width="96"/>
+                                <mah:NumericUpDown Minimum="1" Maximum="12" Value="{Binding ConstructorRows, Mode=TwoWay}" Width="98" />
                             </StackPanel>
 
-                            <Button Grid.Column="2" Margin="12,18,0,0" Style="{StaticResource PrimaryBtn}" Tag="&#xE8B2;" Content="Автоподбор" Command="{Binding AutoFitConstructorCmd}"/>
+                            <Button Margin="44,10,10,0" Style="{StaticResource PrimaryBtn}" Tag="&#xE8B2;" Content="Автоподбор" Command="{Binding AutoFitConstructorCmd}" Grid.Column="1">
+                            </Button>
                         </Grid>
 
                         <Border BorderBrush="#66A6D8" BorderThickness="1" CornerRadius="10" Background="#113049" Padding="8" Height="260">

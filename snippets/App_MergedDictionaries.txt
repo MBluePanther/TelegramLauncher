@@ -1,0 +1,3 @@
+<!-- Вставь в App.xaml внутрь ResourceDictionary.MergedDictionaries (после словарей MahApps) -->
+<ResourceDictionary Source="Themes/Styles.Controls.xaml"/>
+<ResourceDictionary Source="Themes/Styles.DataGrid.xaml"/>
