@@ -9,16 +9,30 @@
     xmlns:views="clr-namespace:TelegramLauncher.Views"
     xmlns:notif="clr-namespace:TelegramLauncher.Notifications"
     xmlns:converters="clr-namespace:TelegramLauncher.Converters"
-    Title="TELEGRAM LAUNCHER"
+    Title="TELEGRAM LAUNCHER v1.1.9"
     Height="720" Width="1100"
     WindowStartupLocation="CenterScreen"
     GlowBrush="{DynamicResource AccentColorBrush}" xmlns:controls="clr-namespace:TelegramLauncher.Views.Controls">
 
     <!-- РЕСУРСЫ -->
     <mah:MetroWindow.Resources>
-        <conv:StatusToBrushConverter x:Key="StatusToBrush" />
-        <conv:StatusToEmojiConverter x:Key="StatusToEmoji" />
+        <converters:StatusToBrushConverter x:Key="StatusToBrush" />
     </mah:MetroWindow.Resources>
+    <!-- Кнопка [Panther] в заголовке окна -->
+    <mah:MetroWindow.RightWindowCommands>
+        <mah:WindowCommands>
+            <Button Padding="4"
+        Margin="0,0,4,0"
+        ToolTip="Безбашенный автор данной программы, заслуживающий заслуг и похвалы."
+        Click="PantherButton_Click">
+                <Image Width="16"
+           Height="30"
+           Stretch="Uniform"
+           Source="/TelegramLauncher;component/panther16.png" />
+            </Button>
+
+        </mah:WindowCommands>
+    </mah:MetroWindow.RightWindowCommands>
 
     <!-- ЛЕВЫЙ БУРГЕР-МЕНЮ -->
     <mah:MetroWindow.Flyouts>
@@ -33,16 +47,6 @@
                         <StackPanel Orientation="Horizontal">
                             <iconPacks:PackIconMaterial Kind="Home" Width="18" Height="18"/>
                             <TextBlock Text="Лаунчер" Margin="6,0,0,0"/>
-
-                            <Separator Margin="0,12,0,8"/>
-                            <TextBlock Text="Тема" Opacity="0.7" Margin="0,0,0,6"/>
-                            <controls:ThemeBar/>
-                        </StackPanel>
-                    </Button>
-                    <Button Padding="10,6" Margin="0,0,0,6" Click="MenuArranger_Click">
-                        <StackPanel Orientation="Horizontal">
-                            <iconPacks:PackIconMaterial Kind="ViewGridPlus" Width="18" Height="18"/>
-                            <TextBlock Text="Запускатор" Margin="6,0,0,0"/>
                         </StackPanel>
                     </Button>
                     <Button Padding="10,6" Margin="0,0,0,6" Click="MenuSorter_Click">
@@ -166,7 +170,7 @@
 
                     <!-- Статус при закрытии (по умолчанию выключен) -->
                     <StackPanel Orientation="Horizontal" Margin="16,0,0,0" VerticalAlignment="Center">
-                        <TextBlock Text="Статус при закрытии" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                        <TextBlock Text="Статус при закрытии - CTRL + Q" VerticalAlignment="Center" Margin="0,0,6,0"/>
                         <mah:ToggleSwitch x:Name="StatusOnExitToggle"/>
                     </StackPanel>
 
@@ -204,89 +208,104 @@
                               Margin="8,8,8,8"
                               VerticalScrollBarVisibility="Auto"
                               PreviewMouseWheel="MainScroll_PreviewMouseWheel" Grid.ColumnSpan="2">
-                    <ListBox x:Name="ClientsList"
+                    <StackPanel>
+                        <ListBox x:Name="ClientsList"
                              Background="Transparent"
                              BorderThickness="0"
-                             ItemContainerStyle="{x:Null}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate DataType="{x:Type models:ClientConfig}">
-                                <Border CornerRadius="10" Padding="12" Margin="0,0,0,10"
+                             ItemContainerStyle="{x:Null}" Visibility="Collapsed">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate DataType="{x:Type models:ClientConfig}">
+                                    <Border x:Name="Card" CornerRadius="10" Padding="12" Margin="0,0,0,10"
                                         Background="{Binding Status, Converter={StaticResource StatusToBrush}}">
-                                    <!-- Лёгкая обёртка: чекбокс + твоя карточка -->
-                                    <DockPanel LastChildFill="True">
-                                        <CheckBox DockPanel.Dock="Left"
+                                        <!-- Лёгкая обёртка: чекбокс + твоя карточка -->
+                                        <DockPanel LastChildFill="True">
+                                            <CheckBox DockPanel.Dock="Left"
                                                   Margin="0,0,8,0"
                                                   VerticalAlignment="Center"
                                                   IsChecked="{Binding IsSelected}"
                                                   ToolTip="Выбрать элемент"
                                                   Click="ClientSelectCheckBox_Click" />
-                                        <!-- Твой контент карточки -->
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
+                                            <!-- Твой контент карточки -->
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
 
-                                            <iconPacks:PackIconMaterial Grid.Column="0"
+                                                <iconPacks:PackIconMaterial Grid.Column="0"
                                                                         Kind="SendCircleOutline"
                                                                         Width="28" Height="28"
                                                                         Margin="6,0,8,0"/>
 
-                                            <StackPanel Grid.Column="1" Margin="0,2,8,2">
-                                                <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold"/>
-                                                <TextBlock Text="{Binding ExePath}" FontSize="12" Opacity="0.8"/>
-                                            </StackPanel>
+                                                <StackPanel Grid.Column="1" Margin="0,2,8,2">
+                                                    <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding ExePath}" FontSize="12" Opacity="0.8"/>
+                                                </StackPanel>
 
-                                            <Button Grid.Column="2"
+                                                <Button Grid.Column="2"
                                                     Padding="10,6"
                                                     Click="StatusButton_Click"
                                                     Background="{Binding Status, Converter={StaticResource StatusToBrush}}">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <TextBlock Text="Статус"/>
-                                                    <TextBlock Text="{Binding Status, Converter={StaticResource StatusToEmoji}}"
-                                                               FontSize="16" Margin="6,0,0,0"/>
-                                                </StackPanel>
-                                                <Button.ContextMenu>
-                                                    <ContextMenu>
-                                                        <MenuItem Header="Актив"     Tag="Active" Click="StatusMenu_Click"/>
-                                                        <MenuItem Header="Спам" Tag="Frozen" Click="StatusMenu_Click"/>
-                                                        <MenuItem Header="Фриз"      Tag="Crash"  Click="StatusMenu_Click"/>
-                                                    </ContextMenu>
-                                                </Button.ContextMenu>
-                                            </Button>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <TextBlock Text="Статус"/>
+                                                    </StackPanel>
+                                                    <Button.ContextMenu>
+                                                        <ContextMenu>
+                                                            <MenuItem Header="Актив"     Tag="Active" Click="StatusMenu_Click"/>
+                                                            <MenuItem Header="Спам" Tag="Crash"  Click="StatusMenu_Click"/>
+                                                            <MenuItem Header="Фриз" Tag="Frozen" Click="StatusMenu_Click"/>
+                                                        </ContextMenu>
+                                                    </Button.ContextMenu>
+                                                </Button>
 
-                                            <Button Grid.Column="3" Padding="10,6" Margin="6,0,0,0"
+                                                <Button Grid.Column="3" Padding="10,6" Margin="6,0,0,0"
                                                     Click="RunClient_Click">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <iconPacks:PackIconMaterial Kind="Play" Width="18" Height="18"/>
-                                                    <TextBlock Text="Запуск" Margin="6,0,0,0"/>
-                                                </StackPanel>
-                                            </Button>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <iconPacks:PackIconMaterial Kind="Play" Width="18" Height="18"/>
+                                                        <TextBlock Text="Запуск" Margin="6,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button>
 
-                                            <Button Grid.Column="4" Padding="10,6" Margin="6,0,0,0"
+                                                <Button Grid.Column="4" Padding="10,6" Margin="6,0,0,0"
                                                     Click="PickExe_Click">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <iconPacks:PackIconMaterial Kind="Folder" Width="18" Height="18"/>
-                                                    <TextBlock Text="Файл" Margin="6,0,0,0"/>
-                                                </StackPanel>
-                                            </Button>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <iconPacks:PackIconMaterial Kind="Folder" Width="18" Height="18"/>
+                                                        <TextBlock Text="Файл" Margin="6,0,0,0"/>
+                                                    </StackPanel>
+                                                </Button>
 
-                                            <Button Grid.Column="5" Padding="10,6" Margin="6,0,0,0"
+                                                <Button Grid.Column="5" Padding="10,6" Margin="6,0,0,0"
                                                     Click="RemoveClient_Click">
-                                                <StackPanel Orientation="Horizontal">
-                                                    <iconPacks:PackIconMaterial Kind="DeleteOutline" Width="18" Height="18"/>
-                                                </StackPanel>
-                                            </Button>
-                                        </Grid>
-                                    </DockPanel>
-                                </Border>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <iconPacks:PackIconMaterial Kind="DeleteOutline" Width="18" Height="18"/>
+                                                    </StackPanel>
+                                                </Button>
+                                            </Grid>
+                                        </DockPanel>
+                                    </Border>
+
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding Status}" Value="{x:Static models:ClientStatus.Active}">
+                                            <Setter TargetName="Card" Property="Background" Value="#2E7D32"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Status}" Value="{x:Static models:ClientStatus.Crash}">
+                                            <Setter TargetName="Card" Property="Background" Value="#FBC02D"/>
+                                        </DataTrigger>
+                                        <DataTrigger Binding="{Binding Status}" Value="{x:Static models:ClientStatus.Frozen}">
+                                            <Setter TargetName="Card" Property="Background" Value="#C62828"/>
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+
+                        <!-- Аккордеон по папкам (Expander) -->
+                        <StackPanel x:Name="FoldersHost" />
+                    </StackPanel>
                 </ScrollViewer>
             </Grid>
 
@@ -299,68 +318,271 @@
 
             <!-- ===== ПАТЧЕР (заглушка) ===== -->
             <Grid x:Name="PatcherPanel" Visibility="Collapsed">
-                <views:PatcherView />
+                <Border Padding="12">
+                    <TextBlock Text="Патчер временно отключён (заглушка)"/>
+                </Border>
             </Grid>
 
             <!-- ===== СТЕКЛОВАТА (заглушка) ===== -->
             <Grid x:Name="GlassPanel" Visibility="Collapsed">
-                <views:GlassWoolView />
+                <Border Padding="12">
+                    <TextBlock Text="Стекловата временно отключена (заглушка)"/>
+                </Border>
             </Grid>
 
+            <!-- ===== ИНСТРУМЕНТЫ ===== -->
             <!-- ===== ИНСТРУМЕНТЫ ===== -->
             <Grid x:Name="ToolsPanel" Visibility="Collapsed">
                 <ScrollViewer VerticalScrollBarVisibility="Auto">
                     <StackPanel Margin="8">
+
+                        <!-- Заголовок раздела -->
+                        <TextBlock Text="Инструменты"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Margin="0,0,0,4" />
+                        <TextBlock Text="Системные утилиты и персонализация интерфейса лаунчера."
+                                   Opacity="0.8"
+                                   Margin="0,0,0,12" />
+
+                        <!-- Быстрые действия, в стиле верхнего меню -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <Button Padding="10,6" Click="CleanHiberfil_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <iconPacks:PackIconMaterial Kind="Eraser" Width="18" Height="18" />
+                                    <TextBlock Text="Очистка hiberfil.sys" Margin="6,0,0,0" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Padding="10,6"
+                                    Margin="8,0,0,0"
+                                    Click="OpenPersonalization_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <iconPacks:PackIconMaterial Kind="Palette" Width="18" Height="18" />
+                                    <TextBlock Text="Персонализация" Margin="6,0,0,0" />
+                                </StackPanel>
+                            </Button>
+
+                            <Button Padding="10,6"
+                                    Margin="8,0,0,0"
+                                    Click="ApplyRandomHardwareProfile_Click">
+                                <StackPanel Orientation="Horizontal">
+                                    <iconPacks:PackIconMaterial Kind="Chip" Width="18" Height="18" />
+                                    <TextBlock Text="Смена «железа»" Margin="6,0,0,0" />
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
+
                         <!-- Очистка hiberfil.sys -->
-                        <Border CornerRadius="10" Padding="12" Background="#17212B" Margin="0,0,0,10">
+                        <Border CornerRadius="10"
+                                Padding="12"
+                                Margin="0,0,0,10">
                             <StackPanel>
-                                <TextBlock Text="Очистка hiberfil.sys" FontSize="16" FontWeight="SemiBold"/>
-                                <TextBlock Margin="0,6,0,10" Opacity="0.85"
-                                           Text="Отключает гибернацию и удаляет системный файл hiberfil.sys, освобождая десятки гигабайт, если вы не используете сон/гибернацию."/>
+                                <TextBlock Text="Очистка файла гибернации"
+                                           FontSize="16"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Margin="0,6,0,10"
+                                           Opacity="0.85"
+                                           Text="Отключает гибернацию и удаляет hiberfil.sys, освобождая место на системном диске. Используй, если не пользуешься режимом сна/гибернации." />
                                 <StackPanel Orientation="Horizontal">
                                     <Button Padding="10,6" Click="CleanHiberfil_Click">
                                         <StackPanel Orientation="Horizontal">
-                                            <iconPacks:PackIconMaterial Kind="Eraser" Width="18" Height="18"/>
-                                            <TextBlock Text="Очистить" Margin="6,0,0,0"/>
+                                            <iconPacks:PackIconMaterial Kind="Eraser" Width="18" Height="18" />
+                                            <TextBlock Text="Очистить" Margin="6,0,0,0" />
                                         </StackPanel>
                                     </Button>
-                                    <Button Padding="10,6" Margin="8,0,0,0" Click="RestoreHibernate_Click">
+                                    <Button Padding="10,6"
+                                            Margin="8,0,0,0"
+                                            Click="RestoreHibernate_Click">
                                         <StackPanel Orientation="Horizontal">
-                                            <iconPacks:PackIconMaterial Kind="Power" Width="18" Height="18"/>
-                                            <TextBlock Text="Включить обратно" Margin="6,0,0,0"/>
+                                            <iconPacks:PackIconMaterial Kind="Power" Width="18" Height="18" />
+                                            <TextBlock Text="Включить обратно" Margin="6,0,0,0" />
                                         </StackPanel>
                                     </Button>
                                 </StackPanel>
-                                <TextBlock x:Name="HiberfilStatusText" Margin="0,8,0,0" Opacity="0.9"/>
+                                <TextBlock x:Name="HiberfilStatusText"
+                                           Margin="0,8,0,0"
+                                           Opacity="0.9" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Персонализация интерфейса -->
+                        <Border x:Name="PersonalizationBorder"
+                                CornerRadius="10"
+                                Padding="12"
+                                Margin="0,0,0,10">
+                            <StackPanel>
+                                <TextBlock Text="Персонализация интерфейса"
+                                           FontSize="16"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Margin="0,6,0,10"
+                                           Opacity="0.85"
+                                           Text="Настройка темы и акцентного цвета лаунчера. Расширенные настройки (шрифты, фон и т.д.) добавим сюда позже." />
+
+                                <!-- Тема приложения -->
+                                <TextBlock Text="Тема приложения"
+                                           FontWeight="SemiBold"
+                                           Margin="0,4,0,4" />
+
+                                <StackPanel Orientation="Horizontal">
+                                    <RadioButton x:Name="RadioThemeDark"
+                                                 Content="Тёмная"
+                                                 GroupName="BaseTheme"
+                                                 Tag="Dark"
+                                                 Checked="ThemeBase_Checked"
+                                                 Margin="0,0,12,0" />
+                                    <RadioButton x:Name="RadioThemeLight"
+                                                 Content="Светлая"
+                                                 GroupName="BaseTheme"
+                                                 Tag="Light"
+                                                 Checked="ThemeBase_Checked" />
+                                </StackPanel>
+
+                                <!-- Акцентный цвет -->
+                                <TextBlock Text="Акцентный цвет"
+                                           FontWeight="SemiBold"
+                                           Margin="0,12,0,4" />
+
+                                <WrapPanel>
+                                    <!-- базовые -->
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Blue"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Синий" />
+                                    </Button>
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Red"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Красный" />
+                                    </Button>
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Green"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Зелёный" />
+                                    </Button>
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Orange"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Оранжевый" />
+                                    </Button>
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Purple"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Фиолетовый" />
+                                    </Button>
+
+                                    <!-- дополнительные -->
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Lime"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Лаймовый" />
+                                    </Button>
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Emerald"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Изумрудный" />
+                                    </Button>
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Teal"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Бирюзовый" />
+                                    </Button>
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Cyan"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Циан" />
+                                    </Button>
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Cobalt"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Кобальт" />
+                                    </Button>
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Indigo"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Индиго" />
+                                    </Button>
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Violet"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Виолетовый" />
+                                    </Button>
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Pink"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Розовый" />
+                                    </Button>
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Amber"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Янтарный" />
+                                    </Button>
+                                    <Button Padding="10,4"
+                                            Margin="0,0,6,6"
+                                            Tag="Yellow"
+                                            Click="Accent_Click">
+                                        <TextBlock Text="Жёлтый" />
+                                    </Button>
+                                </WrapPanel>
+
+                                <!-- Превью текущих настроек -->
+                                <TextBlock x:Name="ThemePreviewText"
+                                           Margin="0,10,0,0"
+                                           Opacity="0.8"
+                                           Text="Текущая тема: Тёмная • Акцент: Blue" />
                             </StackPanel>
                         </Border>
 
                         <!-- Смена «железа» -->
-                        <Border CornerRadius="10" Padding="12" Background="#17212B">
+                        <Border CornerRadius="10"
+                                Padding="12">
                             <StackPanel>
-                                <TextBlock Text="Смена «железа»" FontSize="16" FontWeight="SemiBold"/>
-                                <TextBlock Margin="0,6,0,10" Opacity="0.85"
-                                           Text="Выбирает случайный профиль из device_profiles.txt и применяет значения в реестр (BIOS/Board/System). Ведётся лог applied_profiles.log рядом с .exe."/>
+                                <TextBlock Text="Смена «железа»"
+                                           FontSize="16"
+                                           FontWeight="SemiBold" />
+                                <TextBlock Margin="0,6,0,10"
+                                           Opacity="0.85"
+                                           Text="Применяет случайный профиль «железа» (серийники, Model, BaseBoard/System и т.п.) для маскировки системы. Лог applied_profiles.log создаётся рядом с .exe." />
                                 <StackPanel Orientation="Horizontal">
                                     <Button Padding="10,6" Click="ApplyRandomHardwareProfile_Click">
                                         <StackPanel Orientation="Horizontal">
-                                            <iconPacks:PackIconMaterial Kind="ShuffleVariant" Width="18" Height="18"/>
-                                            <TextBlock Text="Применить случайный профиль" Margin="6,0,0,0"/>
+                                            <iconPacks:PackIconMaterial Kind="ShuffleVariant" Width="18" Height="18" />
+                                            <TextBlock Text="Применить случайный профиль" Margin="6,0,0,0" />
                                         </StackPanel>
                                     </Button>
-                                    <Button Padding="10,6" Margin="8,0,0,0" Click="OpenProfilesFolder_Click">
+                                    <Button Padding="10,6"
+                                            Margin="8,0,0,0"
+                                            Click="OpenProfilesFolder_Click">
                                         <StackPanel Orientation="Horizontal">
-                                            <iconPacks:PackIconMaterial Kind="FolderSearchOutline" Width="18" Height="18"/>
-                                            <TextBlock Text="Открыть папку профилей" Margin="6,0,0,0"/>
+                                            <iconPacks:PackIconMaterial Kind="FolderSearchOutline" Width="18" Height="18" />
+                                            <TextBlock Text="Открыть папку профилей" Margin="6,0,0,0" />
                                         </StackPanel>
                                     </Button>
                                 </StackPanel>
-                                <TextBlock x:Name="HardwareChangeStatusText" Margin="0,8,0,0" Opacity="0.9"/>
+                                <TextBlock x:Name="HardwareChangeStatusText"
+                                           Margin="0,8,0,0"
+                                           Opacity="0.9" />
                             </StackPanel>
                         </Border>
+
                     </StackPanel>
                 </ScrollViewer>
             </Grid>
+
 
         </Grid>
     </Grid>

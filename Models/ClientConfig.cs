@@ -20,11 +20,13 @@ namespace TelegramLauncher.Models
         private ClientStatus _status;
         private bool _isSelected;
         private DateTime? _lastOpenedUtc;
+        private string? _comment;
 
         public string? Name { get => _name; set => SetField(ref _name, value); }
         public string? ExePath { get => _exePath; set => SetField(ref _exePath, value); }
         public string? Arguments { get => _arguments; set => SetField(ref _arguments, value); }
         public ClientStatus Status { get => _status; set => SetField(ref _status, value); }
+        public string? Comment { get; set; }
         public bool IsSelected { get => _isSelected; set => SetField(ref _isSelected, value); }
         public DateTime? LastOpenedUtc { get => _lastOpenedUtc; set => SetField(ref _lastOpenedUtc, value); }
 

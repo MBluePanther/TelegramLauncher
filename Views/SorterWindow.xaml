@@ -4,8 +4,8 @@
                  xmlns:mah="http://metro.mahapps.com/winfx/xaml/controls"
                  xmlns:models="clr-namespace:TelegramLauncher.Models"
                  Title="Сортировщик"
-                 Width="1100"
-                 Height="680"
+                 Width="1200"
+                 Height="720"
                  WindowStartupLocation="CenterOwner"
                  ResizeMode="CanResizeWithGrip">
 
@@ -52,15 +52,15 @@
             <DataTemplate.Triggers>
                 <DataTrigger Binding="{Binding Status}" Value="{x:Static models:ClientStatus.Active}">
                     <Setter TargetName="Dot"  Property="Shape.Fill"      Value="{StaticResource StatusBrushActive}"/>
-                    <Setter TargetName="Icon" Property="TextBlock.Text"  Value="🟢"/>
+                    <Setter TargetName="Icon" Property="TextBlock.Text"  Value="✔"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Status}" Value="{x:Static models:ClientStatus.Frozen}">
                     <Setter TargetName="Dot"  Property="Shape.Fill"      Value="{StaticResource StatusBrushFrozen}"/>
-                    <Setter TargetName="Icon" Property="TextBlock.Text"  Value="🟡"/>
+                    <Setter TargetName="Icon" Property="TextBlock.Text"  Value="⭕"/>
                 </DataTrigger>
                 <DataTrigger Binding="{Binding Status}" Value="{x:Static models:ClientStatus.Crash}">
                     <Setter TargetName="Dot"  Property="Shape.Fill"      Value="{StaticResource StatusBrushCrash}"/>
-                    <Setter TargetName="Icon" Property="TextBlock.Text"  Value="🔴"/>
+                    <Setter TargetName="Icon" Property="TextBlock.Text"  Value="❌"/>
                 </DataTrigger>
             </DataTemplate.Triggers>
         </DataTemplate>
@@ -76,10 +76,52 @@
 
         <!-- Заголовок/описание -->
         <StackPanel Orientation="Vertical" Margin="0,0,0,12">
-            <TextBlock Text="Сортировщик клиентов" FontSize="20" FontWeight="SemiBold"/>
-            <TextBlock Text="Отметь клиентов чекбоксами, выбери папку и нажми «Отсортировать»."
-                       Opacity="0.7" Margin="0,4,0,0"/>
+            <TextBlock Text="Сортировщик клиентов" FontSize="22" FontWeight="SemiBold"/>
+            <TextBlock Text="Отметь клиентов, найди нужных по поиску, выбери папку назначения и запусти копирование tdata."
+                       Opacity="0.65" Margin="0,6,0,0" TextWrapping="Wrap"/>
         </StackPanel>
+        <!-- Панель управления -->
+        <Grid Grid.Row="1" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <TextBlock Text="Поиск" VerticalAlignment="Center" Opacity="0.7"/>
+                <TextBox Width="260" Margin="8,0,0,0"
+                         mah:TextBoxHelper.ClearTextButton="True"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" Grid.Column="1" HorizontalAlignment="Left">
+                <TextBlock Text="Сортировка" VerticalAlignment="Center" Opacity="0.7"/>
+                <ComboBox Width="150" Margin="8,0,0,0"
+                          SelectedValue="{Binding SortMode}"
+                          SelectedValuePath="Tag">
+                    <ComboBoxItem Content="Имя" Tag="Name"/>
+                    <ComboBoxItem Content="Дата" Tag="Date"/>
+                    <ComboBoxItem Content="Статус" Tag="Status"/>
+                </ComboBox>
+                <CheckBox Content="По убыванию" Margin="8,0,0,0"
+                          VerticalAlignment="Center"
+                          IsChecked="{Binding SortDescending}"/>
+            </StackPanel>
+
+            <TextBlock Grid.Column="2"
+                       Margin="16,0,0,0"
+                       VerticalAlignment="Center"
+                       FontWeight="SemiBold"
+                       Text="{Binding SelectionHint}"/>
+
+            <CheckBox Grid.Column="3"
+                      Margin="16,0,0,0"
+                      Content="Выбрать все"
+                      VerticalAlignment="Center"
+                      IsChecked="{Binding SelectAll, Mode=TwoWay}"/>
+        </Grid>
 
         <!-- Таблица -->
         <DataGrid x:Name="ClientsGrid"

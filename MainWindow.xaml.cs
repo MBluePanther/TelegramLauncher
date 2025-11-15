@@ -20,6 +20,9 @@ using TelegramLauncher.Views;
 using TelegramLauncher.Layouting;
 using WinForms = System.Windows.Forms;
 
+
+using ControlzEx.Theming;
+using System.Text.Json;
 namespace TelegramLauncher
 {
     public partial class MainWindow : MetroWindow
@@ -63,7 +66,17 @@ namespace TelegramLauncher
             if (Clients.Count == 0)
                 Clients.Add(new ClientConfig { Name = "Telegram Desktop (пример)" });
 
+
+            // Аккордеон по папкам: пересборка при изменениях
+            Clients.CollectionChanged += (_, __) => RebuildFolderAccordion();
+            RebuildFolderAccordion();
+
             SetSection(Section.Launcher);
+
+            // Тема/акцент: загрузка и применение сохранённых настроек
+            LoadUiSettings();
+            ApplyTheme(_ui.BaseTheme, _ui.Accent);
+            if (_ui.BaseTheme == "Dark" && this.FindName("RadioThemeDark") is System.Windows.Controls.RadioButton _rd) _rd.IsChecked = true;
         }
 
         /* ===== Навигация ===== */
@@ -454,15 +467,15 @@ namespace TelegramLauncher
         {
             if ((sender as FrameworkElement)?.DataContext is not ClientConfig cfg) return;
 
-            if (cfg.Status == ClientStatus.Crash)
+            if (cfg.Status == ClientStatus.Frozen)
             {
-                await this.ShowMessageAsync("Статус: Слёт", "Запуск запрещён: статус «Слёт».", MessageDialogStyle.Affirmative, _dlg);
+                await this.ShowMessageAsync("Статус: Заморожен", "Телега - со статусом Фриз не допускается к запуску.", MessageDialogStyle.Affirmative, _dlg);
                 return;
             }
 
             if (string.IsNullOrWhiteSpace(cfg.ExePath) || !File.Exists(cfg.ExePath))
             {
-                await this.ShowMessageAsync("Нет файла", "Сначала укажите корректный путь к .exe", MessageDialogStyle.Affirmative, _dlg);
+                await this.ShowMessageAsync("Нет исполняемого файла", "Сначала укажите корректный путь к .exe", MessageDialogStyle.Affirmative, _dlg);
                 return;
             }
 
@@ -942,6 +955,169 @@ namespace TelegramLauncher
         }
 
         // ==================== КОНЕЦ: КИЛЛЕР ПРОЦЕССОВ TELEGRAM =====================
+
+
+
+        // Аккордеон по папкам: Expander на весь ряд + список клиентов внутри
+        private void RebuildFolderAccordion()
+        {
+            if (FoldersHost == null || ClientsList == null) return;
+
+            FoldersHost.Children.Clear();
+
+            var groups = Clients
+    .Where(c => !string.IsNullOrWhiteSpace(c.ExePath))
+    .GroupBy(c =>
+    {
+        try
+        {
+            var exeDir = Path.GetDirectoryName(c.ExePath) ?? string.Empty;
+            var parent = string.IsNullOrEmpty(exeDir) ? null : Directory.GetParent(exeDir);
+            return parent?.FullName ?? exeDir;
+        }
+        catch { return string.Empty; }
+    })
+    .Where(g => !string.IsNullOrEmpty(g.Key))
+    .OrderBy(g => g.Key, StringComparer.OrdinalIgnoreCase)
+    .ToList();
+            foreach (var group in groups)
+            {
+                var folderPath = group.Key;
+                var header = new DirectoryInfo(folderPath).Name;
+
+                var listBox = new System.Windows.Controls.ListBox
+                {
+                    Background = ClientsList.Background,
+                    BorderThickness = ClientsList.BorderThickness,
+                    ItemContainerStyle = ClientsList.ItemContainerStyle,
+                    ItemTemplate = ClientsList.ItemTemplate,
+                    ItemsSource = group.ToList()
+                };
+
+                var expander = new System.Windows.Controls.Expander
+                {
+                    Header = header,
+                    ToolTip = folderPath,
+                    Margin = new System.Windows.Thickness(0, 4, 0, 4),
+                    IsExpanded = false,
+                    Content = listBox
+                };
+
+                FoldersHost.Children.Add(expander);
+            }
+        }
+
+        // ===== Тема/акцент: настройки и обработчики =====
+        private sealed class UiSettings
+        {
+            public string BaseTheme { get; set; } = "Dark";
+            public string Accent { get; set; } = "Blue";
+        }
+        private UiSettings _ui = new UiSettings();
+
+        private string GetUiSettingsPath()
+        {
+            var dir = GetAppDataDir();
+            Directory.CreateDirectory(dir);
+            return Path.Combine(dir, "ui_settings.json");
+        }
+
+        private void LoadUiSettings()
+        {
+            try
+            {
+                var path = GetUiSettingsPath();
+                if (File.Exists(path))
+                {
+                    var json = File.ReadAllText(path);
+                    _ui = JsonSerializer.Deserialize<UiSettings>(json) ?? new UiSettings();
+                }
+            }
+            catch { _ui = new UiSettings(); }
+        }
+
+        private void SaveUiSettings()
+        {
+            try
+            {
+                var json = JsonSerializer.Serialize(_ui, new JsonSerializerOptions { WriteIndented = true });
+                File.WriteAllText(GetUiSettingsPath(), json);
+            }
+            catch { }
+        }
+
+        private void ApplyTheme(string baseTheme, string accent)
+        {
+            try
+            {
+                ThemeManager.Current.ChangeThemeBaseColor(System.Windows.Application.Current, baseTheme);
+                ThemeManager.Current.ChangeThemeColorScheme(System.Windows.Application.Current, accent);
+                if (this.FindName("ThemePreviewText") is System.Windows.Controls.TextBlock _tp)
+                    _tp.Text = $"Текущая тема: {(baseTheme == "Dark" ? "Тёмная" : "Светлая")} • Акцент: {accent}";
+            }
+            catch { }
+        }
+
+        private void ThemeBase_Checked(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (sender is System.Windows.FrameworkElement fe && fe.Tag is string baseTheme && !string.IsNullOrWhiteSpace(baseTheme))
+            {
+                _ui.BaseTheme = baseTheme;
+                ApplyTheme(_ui.BaseTheme, _ui.Accent);
+                SaveUiSettings();
+            }
+        }
+
+        private void Accent_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+            if (sender is System.Windows.FrameworkElement fe && fe.Tag is string accent && !string.IsNullOrWhiteSpace(accent))
+            {
+                _ui.Accent = accent;
+                ApplyTheme(_ui.BaseTheme, _ui.Accent);
+                SaveUiSettings();
+            }
+        }
+        private async void PantherButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Сначала пробуем открыть установленный Telegram через протокол tg://
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "tg://resolve?domain=IT_Panthers",
+                    UseShellExecute = true
+                });
+                return;
+            }
+            catch
+            {
+                // Если протокол не привязан или нет Telegram — падаем в браузер
+            }
+
+            try
+            {
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "https://t.me/IT_Panthers",
+                    UseShellExecute = true
+                });
+            }
+            catch (Exception ex)
+            {
+                await this.ShowMessageAsync(
+                    "Ошибка",
+                    $"Не удалось открыть диалог с @IT_Panthers.\n\n{ex.Message}",
+                    MessageDialogStyle.Affirmative,
+                    _dlg);
+            }
+        }
+        private void OpenPersonalization_Click(object sender, RoutedEventArgs e)
+        {
+            if (this.FindName("PersonalizationBorder") is FrameworkElement fe)
+            {
+                fe.BringIntoView();
+            }
+        }
 
 
     }

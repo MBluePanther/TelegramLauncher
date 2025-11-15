@@ -14,9 +14,9 @@ namespace TelegramLauncher.Converters
             {
                 return st switch
                 {
-                    ClientStatus.Active => "🟢",
-                    ClientStatus.Frozen => "🟡",
-                    ClientStatus.Crash  => "🔴",
+                    ClientStatus.Active => "✔",
+                    ClientStatus.Frozen => "⭕",
+                    ClientStatus.Crash  => "❌",
                     _ => "⚪"
                 };
             }

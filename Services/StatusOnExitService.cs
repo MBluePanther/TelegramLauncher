@@ -1,4 +1,4 @@
-
+﻿
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
@@ -68,6 +68,7 @@ namespace TelegramLauncher.Services
                             {
                                 var status = dlg.SelectedStatus.Value;
                                 info.Client.Status = status;
+                                info.Client.Comment = dlg.Comment; // ← вот эта строка добавляет коммент в модель
                                 TryPersistStatus(info.Client, status);
                             }
                         }
@@ -103,7 +104,7 @@ namespace TelegramLauncher.Services
             {
                 // update persistent storage if your app has a central store service;
                 // otherwise leave as in-memory only (Sorter/Launcher reads from memory anyway).
-                // If you already have ClientStore.Save(list) � better call it there.
+                // If you already have ClientStore.Save(list) – better call it there.
                 // This stub intentionally does not throw.
             }
             catch { }

@@ -26,13 +26,19 @@
             <TextBlock Text="Выберите статус телеги:" Margin="0,0,0,6"/>
             <ComboBox x:Name="StatusBox" Width="220" SelectedIndex="0">
                 <ComboBoxItem Content="Актив" Tag="{x:Static models:ClientStatus.Active}"/>
-                <ComboBoxItem Content="Заморожен" Tag="{x:Static models:ClientStatus.Frozen}"/>
-                <ComboBoxItem Content="Слёт" Tag="{x:Static models:ClientStatus.Crash}"/>
+                <ComboBoxItem Content="Спам"  Tag="{x:Static models:ClientStatus.Crash}"/>
+                <ComboBoxItem Content="Фриз"  Tag="{x:Static models:ClientStatus.Frozen}"/>
             </ComboBox>
+            <TextBlock Grid.Row="2" Text="Комментарий:" Margin="0,0,0,4"/>
+            
+            <TextBox   Grid.Row="2" x:Name="CommentBox"
+           Height="80" AcceptsReturn="True" TextWrapping="Wrap"
+           VerticalScrollBarVisibility="Auto"/>
         </StackPanel>
+        
 
         <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button Width="90" Margin="0,0,8,0" IsDefault="True" Click="Ok_Click">OK</Button>
+            <Button Width="121" Margin="0,0,8,0" IsDefault="True" Click="Ok_Click">OK</Button>
             <Button Width="90" IsCancel="True">Отмена</Button>
         </StackPanel>
     </Grid>
