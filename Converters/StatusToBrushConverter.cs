@@ -1,31 +1,50 @@
-﻿using System;
+using System;
 using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
-using TelegramLauncher.Models;
 
 namespace TelegramLauncher.Converters
 {
-    public class StatusToBrushConverter : IValueConverter
+    public sealed class StatusToBrushConverter : IValueConverter
     {
-        private static SolidColorBrush B(byte r, byte g, byte b) =>
-            new SolidColorBrush(Color.FromRgb(r, g, b));
-
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var def = B(23, 33, 43); // тёмно-синий фон по умолчанию
-            if (value is not ClientStatus st) return def;
+            string status = value?.ToString() ?? string.Empty;
+            status = status.Trim();
 
-            return st switch
+            // Default neutral
+            Color color = (Color)ColorConverter.ConvertFromString("#455A64");
+
+            switch (status)
             {
-                ClientStatus.Active => B(46, 204, 113), // зелёный
-                ClientStatus.Frozen => B(243, 156, 18), // оранжевый
-                ClientStatus.Crash => B(231, 76, 60),  // красный
-                _ => def
-            };
+                case "Active":
+                case "1":
+                    color = (Color)ColorConverter.ConvertFromString("#2E7D32"); // green
+                    break;
+
+                case "Crash":
+                case "2":
+                    color = (Color)ColorConverter.ConvertFromString("#FBC02D"); // yellow
+                    break;
+
+                case "Spam":
+                    color = (Color)ColorConverter.ConvertFromString("#FBC02D"); // yellow
+                    break;
+
+                case "Frozen":
+                case "3":
+                    color = (Color)ColorConverter.ConvertFromString("#C62828"); // red
+                    break;
+            }
+
+            var brush = new SolidColorBrush(color);
+            if (brush.CanFreeze) brush.Freeze();
+            return brush;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-            Binding.DoNothing;
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return Binding.DoNothing;
+        }
     }
 }

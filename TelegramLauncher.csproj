@@ -5,7 +5,14 @@
     <UseWPF>true</UseWPF>
     <UseWindowsForms>true</UseWindowsForms>
     <Nullable>enable</Nullable>
+    <ApplicationIcon>LauncherIcon.ico</ApplicationIcon>
   </PropertyGroup>
+  <ItemGroup>
+    <None Remove="panther16.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="LauncherIcon.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <!-- ставим стабильную 2.x (подходит для .NET 6/7/8) -->
@@ -15,6 +22,12 @@
 
   <ItemGroup>
     <Folder Include="ViewModels\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="panther16.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
   </ItemGroup>
 </Project>
 
